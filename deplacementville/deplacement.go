@@ -1,6 +1,7 @@
 package ProjetRED
 
 import (
+	Menu "PrjoetRED/Menu"
 	"fmt"
 	"strconv"
 )
@@ -26,8 +27,7 @@ func Deplacement() {
 		fmt.Scanln(&saisie)
 
 		if saisie == "m" {
-			Menuvilleversville()
-			return
+			Menu.MainMenu()
 		}
 
 		choixville, err := strconv.Atoi(saisie)
