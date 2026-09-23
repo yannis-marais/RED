@@ -1,7 +1,7 @@
 package projetRED
 
 import (
-	Marchand "ProjetRED/Marchand"
+	//Marchand "ProjetRED/Marchand"
 	Equipement "ProjetRED/Equipement"
 	personnage "ProjetRED/Personnage"
 	"bufio"
@@ -62,7 +62,7 @@ func MainMenu(p personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 3:
-			Marchand.Marchand()
+			//Marchand.Marchand()
 		case 4:
 			Forgeron(p)
 		case 0:
@@ -157,6 +157,10 @@ func AccessInventory(p personnage.Character) string {
 
 	fmt.Fprintf(&sb, "╭%s╮\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Inventaire")
+
+	fmt.Fprintf(&sb, "├%s┤\n", ligne)
+	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
+	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Objets")
