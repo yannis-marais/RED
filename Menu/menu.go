@@ -25,8 +25,7 @@ func StartMenu() {
 	}
 	switch choice {
 	case 1:
-		nom, classe := CreerPerso()
-		Player := personnage.CharacterCreation(nom, classe)
+		Player := personnage.CharacterCreation(CreerPerso())
 		MainMenu(Player)
 	case 0:
 		fmt.Println("Au Revoir !")
@@ -222,9 +221,9 @@ func CreerPerso() (string, personnage.Classe) {
 	case 1:
 		return nom, personnage.Classes["Ronin"]
 	case 2:
-		return nom, personnage.Classes["Cuirasé"]
+		return nom, personnage.Classes["Cuirassé"]
 	case 3:
-		return nom, personnage.Classes["mage spirituel"]
+		return nom, personnage.Classes["Mage spirituel"]
 	default:
 		fmt.Println("Choix invalide, classe par défaut : Ronin")
 		return nom, personnage.Classes["Ronin"]
