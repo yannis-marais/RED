@@ -1,10 +1,13 @@
 package ProjetRED
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
+	"os"
 	"sort"
 	"strings"
+	"time"
 
 	Equipement "ProjetRED/Equipement"
 	Menu "ProjetRED/Menu"
@@ -30,6 +33,13 @@ func lifeBar(current, max, width int) string {
 	return "[" + strings.Repeat("█", filled) + strings.Repeat("░", width-filled) + "]"
 }
 
+func padCombatLine(text string, width int) string {
+	if len(text) >= width {
+		return text[:width]
+	}
+	return text + strings.Repeat(" ", width-len(text))
+}
+
 func renderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMaxHP, enemyRHP, enemyRMaxHP int) string {
 	if p.PV < 0 {
 		p.PV = 0
@@ -47,26 +57,133 @@ func renderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMa
 	enemyBar := lifeBar(enemyHP, enemyMaxHP, 18)
 	enemyRBar := lifeBar(enemyRHP, enemyRMaxHP, 18)
 
+	lines := []string{
+		"MENU DE COMBAT",
+		fmt.Sprintf("%s : %d/%d %s", p.Nom, p.PV, p.PVMax, playerBar),
+		fmt.Sprintf("Ennemi PV : %s %d/%d %s", enemyName, enemyHP, enemyMaxHP, enemyBar),
+		fmt.Sprintf("Ennemi PVR : %s %d/%d %s", enemyName, enemyRHP, enemyRMaxHP, enemyRBar),
+		"1. Attaque physique",
+		"2. Attaque spirituelle",
+		"3. Skills",
+		"4. Make a Wish",
+		"5. Inventaire",
+		"6. Défendre",
+		"0. Fuir",
+	}
+
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "\n╭%s╮\n", line)
-	fmt.Fprintf(&sb, "│ %-48s │\n", "MENU DE COMBAT")
+	for _, l := range lines[:1] {
+		fmt.Fprintf(&sb, "│ %-48s │\n", padCombatLine(l, 48))
+	}
 	fmt.Fprintf(&sb, "├%s┤\n", line)
-	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("%s : %d/%d %s", p.Nom, p.PV, p.PVMax, playerBar))
-	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("Ennemi PV : %s %d/%d %s", enemyName, enemyHP, enemyMaxHP, enemyBar))
-	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("Ennemi PVR : %s %d/%d %s", enemyName, enemyRHP, enemyRMaxHP, enemyRBar))
-	fmt.Fprintf(&sb, "├%s┤\n", line)
-	fmt.Fprintf(&sb, "│ %-48s │\n", "1. Attaque physique")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "2. Attaque spirituelle")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "3. Skills")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "4. Make a Wish")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "5. Inventaire")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "6. Défendre")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "0. Fuir")
+	for _, l := range lines[1:] {
+		fmt.Fprintf(&sb, "│ %-48s │\n", padCombatLine(l, 48))
+	}
 	fmt.Fprintf(&sb, "╰%s╯\n", line)
 	return sb.String()
 }
 
-func applySkill(p *personnage.Character, monstre *enemies.MONSTER, skillName string) bool {
+func performQTE() (float64, string) {
+	const (
+		targetMin = 40
+		targetMax = 60
+		step      = 20 * time.Millisecond
+	)
+
+	fmt.Println("\nQTE : appuie sur Entrée quand le X est au centre !")
+	fmt.Println("       0         25         50         75        100")
+	fmt.Println("       |----------|----------|----------|----------|")
+
+	start := time.Now()
+	pos := 0
+	direction := 1
+	reader := bufio.NewReader(os.Stdin)
+	inputDone := make(chan struct{})
+
+	go func() {
+		_, _ = reader.ReadString('\n')
+		close(inputDone)
+	}()
+
+	for time.Since(start) < 2*time.Second {
+		pos += direction
+		if pos <= 0 || pos >= 100 {
+			direction *= -1
+			pos += direction
+		}
+
+		bar := make([]rune, 100)
+		for i := range bar {
+			bar[i] = '-'
+		}
+		bar[pos] = 'X'
+		for i := targetMin; i <= targetMax; i++ {
+			if i >= 0 && i < len(bar) {
+				bar[i] = '='
+			}
+		}
+		if pos >= targetMin && pos <= targetMax {
+			fmt.Printf("\r[%s]  CIBLE  < %d >", string(bar), pos)
+		} else {
+			fmt.Printf("\r[%s]  < %d >", string(bar), pos)
+		}
+
+		select {
+		case <-inputDone:
+			if pos >= targetMin && pos <= targetMax {
+				fmt.Println("\n* CRIT *")
+				return 2.0, "CRIT"
+			}
+			if pos >= targetMin-15 && pos <= targetMax+15 {
+				fmt.Println("\n* BON *")
+				return 1.5, "BON"
+			}
+			fmt.Println("\n* RATÉ *")
+			return 0.8, "RATÉ"
+		default:
+		}
+
+		time.Sleep(step)
+	}
+
+	fmt.Println("\n* RATÉ *")
+	return 0.8, "RATÉ"
+}
+
+func applyAttackDamage(p *personnage.Character, monstre *enemies.MONSTER, baseDamage int, target string, multiplier float64) {
+	if p == nil || monstre == nil {
+		return
+	}
+
+	dmg := int(float64(baseDamage) * multiplier)
+	if dmg <= 0 {
+		dmg = 0
+	}
+
+	switch target {
+	case "PV":
+		if monstre.PV > 0 {
+			monstre.PV -= dmg
+			if monstre.PV < 0 {
+				monstre.PV = 0
+			}
+		}
+		fmt.Printf("%s inflige %d dégâts physiques à %s\n", p.Nom, dmg, monstre.NOM)
+		fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
+	case "PVR":
+		if monstre.PVR > 0 {
+			monstre.PVR -= dmg
+			if monstre.PVR < 0 {
+				monstre.PVR = 0
+			}
+		}
+		fmt.Printf("%s inflige %d dégâts spirituels à %s\n", p.Nom, dmg, monstre.NOM)
+		fmt.Printf("%s : PVR %d/%d\n", monstre.NOM, monstre.PVR, monstre.PVMAXR)
+	}
+}
+
+func applySkillWithMultiplier(p *personnage.Character, monstre *enemies.MONSTER, skillName string, multiplier float64) bool {
 	if p == nil || monstre == nil {
 		return false
 	}
@@ -82,31 +199,22 @@ func applySkill(p *personnage.Character, monstre *enemies.MONSTER, skillName str
 		return false
 	}
 
-	dmg := Equipement.CalculateSkillDamage(*p, skillDef)
+	baseDamage := Equipement.CalculateSkillDamage(*p, skillDef)
 	if skillDef.Type == "Magic" {
-		if monstre.PVR > 0 {
-			monstre.PVR -= dmg
-			if monstre.PVR < 0 {
-				monstre.PVR = 0
-			}
-		}
-		fmt.Printf("\n%s lance %s et inflige %d dégâts spirituels à %s\n", p.Nom, skillName, dmg, monstre.NOM)
-		fmt.Printf("%s : PVR %d/%d\n", monstre.NOM, monstre.PVR, monstre.PVMAXR)
+		applyAttackDamage(p, monstre, baseDamage, "PVR", multiplier)
 	} else {
-		if monstre.PV > 0 {
-			monstre.PV -= dmg
-			if monstre.PV < 0 {
-				monstre.PV = 0
-			}
-		}
-		fmt.Printf("\n%s utilise %s et inflige %d dégâts physiques à %s\n", p.Nom, skillName, dmg, monstre.NOM)
-		fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
+		applyAttackDamage(p, monstre, baseDamage, "PV", multiplier)
 	}
 
 	if skillDef.Cooldown > 0 {
 		p.Cooldowns[skillName] = skillDef.Cooldown
 	}
 	return true
+}
+
+func applySkill(p *personnage.Character, monstre *enemies.MONSTER, skillName string) bool {
+	multiplier, _ := performQTE()
+	return applySkillWithMultiplier(p, monstre, skillName, multiplier)
 }
 
 func usePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
@@ -141,6 +249,122 @@ func usePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
 	return applySkill(p, monstre, names[choice-1])
 }
 
+func RenderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMaxHP, enemyRHP, enemyRMaxHP int) string {
+	return renderCombatMenu(p, enemyName, enemyHP, enemyMaxHP, enemyRHP, enemyRMaxHP)
+}
+
+func PerformQTE() (float64, string) {
+	return performQTE()
+}
+
+func ApplyAttackDamage(p *personnage.Character, monstre *enemies.MONSTER, baseDamage int, target string, multiplier float64) {
+	applyAttackDamage(p, monstre, baseDamage, target, multiplier)
+}
+
+func UsePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
+	return usePlayerSkill(p, monstre)
+}
+
+func MakeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
+	makeAWish(p, monstre)
+}
+
+func RunTerminalCombatDemo() {
+	p := personnage.CharacterCreation("Hero", personnage.Classes["Ronin"])
+	p.PV = 100
+	p.PVMax = 100
+	p.Strength = 20
+	p.Reiki = 25
+	p.Cooldowns = map[string]int{}
+	p.Skills = map[string]personnage.Skill{
+		"Fireball": {Name: "Fireball", Damage: 30, Type: "Magic"},
+		"Slash":    {Name: "Slash", Damage: 15, Type: "Nature"},
+	}
+
+	monstre := enemies.MONSTER{
+		NOM:      "Gobelin",
+		PVMax:    200,
+		PV:       200,
+		PVMAXR:   120,
+		PVR:      120,
+		Strength: 12,
+		Spd:      10,
+	}
+
+	fmt.Println("=== MODE TEST COMBAT TERMINAL ===")
+	fmt.Println("Tu affrontes un Gobelin. Tu peux jouer le combat toi-même.")
+	fmt.Println("1. Attaque physique")
+	fmt.Println("2. Attaque spirituelle")
+	fmt.Println("3. Skills")
+	fmt.Println("4. Make a Wish")
+	fmt.Println("5. Inventaire")
+	fmt.Println("6. Défendre")
+	fmt.Println("0. Fuir")
+
+	for p.PV > 0 && (monstre.PV > 0 || monstre.PVR > 0) {
+		fmt.Print(renderCombatMenu(p, monstre.NOM, monstre.PV, monstre.PVMax, monstre.PVR, monstre.PVMAXR))
+		choice, ok := Menu.ReadChoice("Votre choix : ")
+		if !ok {
+			fmt.Println("Choix invalide.")
+			continue
+		}
+
+		switch choice {
+		case 1:
+			multiplier, _ := PerformQTE()
+			ApplyAttackDamage(&p, &monstre, p.Strength, "PV", multiplier)
+		case 2:
+			multiplier, _ := PerformQTE()
+			ApplyAttackDamage(&p, &monstre, p.Reiki, "PVR", multiplier)
+		case 3:
+			if !UsePlayerSkill(&p, &monstre) {
+				continue
+			}
+		case 4:
+			MakeAWish(&p, &monstre)
+		case 5:
+			Menu.ManageInventory(p)
+			Menu.WaitForReturn()
+			continue
+		case 6:
+			fmt.Println("Tu prends une défense et attends le prochain coup.")
+		case 0:
+			fmt.Println("Tu fuis le combat.")
+			return
+		default:
+			fmt.Println("Choix invalide.")
+			continue
+		}
+
+		if monstre.PV <= 0 && monstre.PVR <= 0 {
+			fmt.Println("Victoire ! Le Gobelin est vaincu.")
+			return
+		}
+
+		if p.PV <= 0 {
+			fmt.Println("Tu as perdu le combat.")
+			return
+		}
+
+		if choice != 5 && choice != 6 && choice != 0 {
+			monstreDamage := monstre.Strength
+			p.PV -= monstreDamage
+			if p.PV < 0 {
+				p.PV = 0
+			}
+			fmt.Printf("%s te frappe pour %d dégâts.\n", monstre.NOM, monstreDamage)
+			fmt.Printf("%s : PV %d/%d\n", p.Nom, p.PV, p.PVMax)
+		}
+	}
+
+	if p.PV <= 0 {
+		fmt.Println("Tu es mort au combat.")
+		return
+	}
+
+	fmt.Println("Combat terminé.")
+}
+
 func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 	if p == nil || monstre == nil {
 		fmt.Println("Combat impossible : personnage ou monstre invalide.")
@@ -157,29 +381,15 @@ func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 
 		switch choice {
 		case 1:
-			degats := p.Strength
-			if monstre.PV > 0 {
-				monstre.PV -= degats
-				if monstre.PV < 0 {
-					monstre.PV = 0
-				}
-			}
+			multiplier, _ := performQTE()
 			fmt.Println("\nVous utilisez Attaque basique.")
-			fmt.Printf("%s inflige %d dégâts à %s\n", p.Nom, degats, monstre.NOM)
-			fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
+			applyAttackDamage(p, monstre, p.Strength, "PV", multiplier)
 			return
 
 		case 2:
-			degats := p.Reiki
-			if monstre.PVR > 0 {
-				monstre.PVR -= degats
-				if monstre.PVR < 0 {
-					monstre.PVR = 0
-				}
-			}
+			multiplier, _ := performQTE()
 			fmt.Println("\nVous utilisez Attaque spéciale (Reiki).")
-			fmt.Printf("%s inflige %d dégâts à %s\n", p.Nom, degats, monstre.NOM)
-			fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PVR, monstre.PVMAXR)
+			applyAttackDamage(p, monstre, p.Reiki, "PVR", multiplier)
 			return
 
 		case 3:
