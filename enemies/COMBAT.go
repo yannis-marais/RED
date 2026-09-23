@@ -1,8 +1,9 @@
 package ProjetRED
 
 import (
-	personnage "ProjetRED/Personnage"
 	"fmt"
+
+	personnage "ProjetRED/Personnage"
 )
 
 type MonsterPattern func(tour int, monstre *MONSTER, perso *personnage.Character)
@@ -29,7 +30,7 @@ func SkeletonPattern(tour int, monstre *MONSTER, perso *personnage.Character) {
 
 	dgt := monstre.Strength + 2
 	if tour%2 == 0 {
-		dgt += 3
+		dgt += 20
 	}
 
 	perso.PV -= dgt
@@ -57,7 +58,7 @@ func VouivrePattern(tour int, monstre *MONSTER, perso *personnage.Character) {
 		return
 	}
 
-	dgt := monstre.Strength + 3
+	dgt := monstre.Strength + 2
 	if tour%3 == 0 {
 		dgt += 5
 	}
@@ -74,7 +75,7 @@ func LoupGarouPattern(tour int, monstre *MONSTER, perso *personnage.Character) {
 
 	dgt := monstre.Strength + 2
 	if tour%2 == 1 {
-		dgt += 4
+		dgt += 6
 	}
 
 	perso.PV -= dgt
@@ -104,7 +105,7 @@ func OrcPattern(tour int, monstre *MONSTER, perso *personnage.Character) {
 
 	dgt := monstre.Strength + 5
 	if tour%3 == 0 {
-		dgt += 7
+		dgt += 2
 	}
 
 	perso.PV -= dgt
@@ -138,6 +139,10 @@ var monsterPatterns = map[string]MonsterPattern{
 	"zombie":                 ZombiePattern,
 	"orc":                    OrcPattern,
 	"dragon":                 DragonPattern,
+	"Le B.":                  DragonPattern,
+	"Le Ant":                 DragonPattern,
+	"Le L":                   DragonPattern,
+	"Le RELOU":               DragonPattern,
 }
 
 func MonsterAttackPattern(tour int, monstre *MONSTER, perso *personnage.Character) {
