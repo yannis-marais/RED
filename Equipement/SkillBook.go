@@ -22,9 +22,9 @@ var SkillBooks = map[string]SkillBook{
 		Skill:    SkillList["Power Strike"],
 		MaxStack: 1,
 	},
-	"Book of Heal": {
-		Name:     "Book of Heal",
-		Skill:    SkillList["Heal"],
+	"Book of Healing": {
+		Name:     "Book of Healing",
+		Skill:    SkillList["Healing"],
 		MaxStack: 1,
 	},
 }

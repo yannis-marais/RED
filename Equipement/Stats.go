@@ -10,6 +10,7 @@ func RecalculateStats(p *personnage.Character) {
 			p.Defense = p.Classe.Defense + item.BonusDef
 			p.Reiki = p.Classe.Reiki + item.BonusReiki
 			p.Spd = p.Classe.Spd + item.BonusSpeed
+			p.PV = p.PV + HealingPotion.Heal + Pain.Heal
 		}
 	}
 

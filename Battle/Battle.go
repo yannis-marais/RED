@@ -104,7 +104,7 @@ func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 			return
 
 		case 4:
-			Menu.AccessInventory(*p)
+			Menu.ManageInventory(*p)
 			Menu.WaitForReturn()
 			continue
 

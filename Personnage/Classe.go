@@ -28,8 +28,8 @@ var Classes = map[string]Classe{
 		Boots:    "Samourai_Boots",
 	},
 	// un seul et meme item (bague boucle bijoux)
-	"mage spirituel": {
-		Nom:      "mage spirituel",
+	"Mage spirituel": {
+		Nom:      "Mage spirituel",
 		PVMax:    44,
 		Strength: 8,
 		Defense:  10,
