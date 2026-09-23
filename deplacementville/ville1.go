@@ -19,15 +19,15 @@ func Ville1(p *personnage.Character) {
 		var saisie string
 
 		for {
-			fmt.Println("vous êtes dans la ville 1")
-			fmt.Println("appui sur m pour le menu")
-			fmt.Println("appui sur j pour aller parler a jack (conseiller avant la forêt)")
+			fmt.Println("==== Forteresse du royaume ====")
+			fmt.Println("j: pour aller parler a jack (conseiller avant la forêt)")
 			fmt.Println("appui sur f pour aller dans la forêt")
+			fmt.Println("m: pour ouvrire le menu")
 
 			fmt.Scanln(&saisie)
 
 			if saisie == "m" {
-				Menu.MainMenu()
+				Menu.MainMenu(p)
 			}
 			if saisie == j || saisie == f {
 				break
