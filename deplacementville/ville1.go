@@ -1,11 +1,12 @@
 package ProjetRED
 
 import (
+	personnage "ProjetRED/Personnage"
 	"fmt"
 	Menu "ProjetRED/Menu"
 )
 
-func Ville1() {
+func Ville1(p *personnage.Character) {
 	for {
 		const j = "j"
 		const f = "f"

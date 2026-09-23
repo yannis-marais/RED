@@ -1,7 +1,7 @@
-package projetRED
+package ProjetRED
 
 import (
-	//Marchand "ProjetRED/Marchand"
+	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
@@ -11,13 +11,37 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
 )
+
+var CurrentPlayer *personnage.Character
+
+func SetCurrentPlayer(p *personnage.Character) {
+	CurrentPlayer = p
+}
+
+func SaveCurrentGame() error {
+	if CurrentPlayer == nil {
+		return fmt.Errorf("aucun personnage actif")
+	}
+	return personnage.SaveCharacterToFile(personnage.DefaultSavePath(), *CurrentPlayer)
+}
+
+func LoadCurrentGame() (*personnage.Character, error) {
+	player, err := personnage.LoadCharacterFromFile(personnage.DefaultSavePath())
+	if err != nil {
+		return nil, err
+	}
+	SetCurrentPlayer(&player)
+	return &player, nil
+}
 
 // menu du lancement
 func StartMenu() {
 
 	fmt.Println("\n=== MENU CREATION ===")
 	fmt.Println("1. Crée un nouveau Personage")
+	fmt.Println("2. Charger une sauvegarde")
 	fmt.Println("0. Quitter")
 	choice, reponse := ReadChoice("Votre choix : ")
 	if !reponse {
@@ -27,7 +51,16 @@ func StartMenu() {
 	switch choice {
 	case 1:
 		Player := personnage.CharacterCreation(CreerPerso())
+		SetCurrentPlayer(&Player)
 		MainMenu(&Player)
+	case 2:
+		player, err := LoadCurrentGame()
+		if err != nil {
+			fmt.Println("Aucune sauvegarde trouvée.")
+			StartMenu()
+			return
+		}
+		MainMenu(player)
 	case 0:
 		fmt.Println("Au Revoir !")
 		return
@@ -42,9 +75,12 @@ func MainMenu(p *personnage.Character) {
 	for {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
 		fmt.Println("1. Afficher les informations du personnage")
-		fmt.Println("2. Accéder à l'inventaire")
-		fmt.Println("3. Marchand")
-		fmt.Println("4. Forgeron")
+		fmt.Println("2. Afficher les informations du personnage")
+		fmt.Println("3. Accéder à l'inventaire")
+		fmt.Println("4. Marchand")
+		fmt.Println("5. Forgeron")
+		fmt.Println("6. Sauvegarder")
+		fmt.Println("7. Charger la sauvegarde")
 		fmt.Println("0. Quitter")
 
 		choice, reponse := ReadChoice("Votre choix : ")
@@ -56,15 +92,33 @@ func MainMenu(p *personnage.Character) {
 
 		switch choice {
 		case 1:
+			City.Ville1(p)
+		case 2:
 			DisplayInfo(*p)
 			WaitForReturn()
-		case 2:
+		case 3:
 			ManageInventory(p)
 			WaitForReturn()
-		case 3:
-			Marchand.Marchand(func() {})
 		case 4:
+			Marchand.Marchand(func() {})
+		case 5:
 			Forgeron(p)
+		case 6:
+			if err := SaveCurrentGame(); err != nil {
+				fmt.Println("Erreur de sauvegarde :", err)
+			} else {
+				fmt.Println("Partie sauvegardée dans save.json")
+			}
+			WaitForReturn()
+		case 7:
+			player, err := LoadCurrentGame()
+			if err != nil {
+				fmt.Println("Erreur de chargement :", err)
+			} else {
+				fmt.Println("Partie chargée depuis save.json")
+				CurrentPlayer = player
+			}
+			WaitForReturn()
 		case 0:
 			fmt.Println("À bientôt !")
 			return
