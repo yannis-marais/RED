@@ -357,6 +357,7 @@ func SelectFromList(p personnage.Character, names []string, category string) str
 
 	switch category {
 	case "item":
+		Equipement.EquipItemByName(&p, selected, Equipement.ItemType(selected))
 		fmt.Println("Tu as sélectionné un objet :", selected)
 
 	case "consumable":

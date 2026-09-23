@@ -69,7 +69,7 @@ func Forge(p Personnage.Character, itemName string) {
 	}
 
 	// Donner l'objet forgé
-	Equipement.AddItem(p, recipe.Result)
+	Equipement.AddItem(&p, recipe.Result)
 
 	fmt.Println(p.Nom, "a forgé :", itemName)
 }

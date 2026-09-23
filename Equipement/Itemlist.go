@@ -36,7 +36,10 @@ type Consumable struct {
 	MaxStack int
 }
 
-func AddItem(p personnage.Character, item Item) {
+func AddItem(p *personnage.Character, item Item) {
+	if p == nil {
+		return
+	}
 	if p.Inventory.Items == nil {
 		p.Inventory.Items = make(map[string]int)
 	}
@@ -127,3 +130,4 @@ func GetConsumableByName(name string) (Consumable, bool) {
 	item, ok := ConsumablesRegistry[name]
 	return item, ok
 }
+

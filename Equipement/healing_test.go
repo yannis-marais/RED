@@ -31,3 +31,30 @@ func TestUpdateCooldownsDecrementsByOne(t *testing.T) {
 		t.Fatalf("expected cooldown 2, got %d", player.Cooldowns["Healing"])
 	}
 }
+
+func TestEquipItemByNameReplacesOldEquipmentAndUpdatesStats(t *testing.T) {
+	player := personnage.CharacterCreation("test", personnage.Classes["Ronin"])
+	player.Inventory.Items = map[string]int{
+		"Swordshield":  1,
+		"Bandit Spear": 1,
+	}
+	player.Weapon = "Bandit_Spear"
+
+	EquipItemByName(&player, "Swordshield", Weapon)
+
+	if player.Weapon != "Swordshield" {
+		t.Fatalf("expected weapon to be equipped as Swordshield, got %s", player.Weapon)
+	}
+	if player.Inventory.Items["Swordshield"] != 0 {
+		t.Fatalf("expected Swordshield to be removed from inventory after equip, got %d", player.Inventory.Items["Swordshield"])
+	}
+	if _, ok := player.Inventory.Items["Bandit Spear"]; !ok {
+		t.Fatalf("expected previous weapon to be returned to inventory")
+	}
+	if player.Strength != player.Classe.Strength+5 {
+		t.Fatalf("expected strength %d, got %d", player.Classe.Strength+5, player.Strength)
+	}
+	if player.Defense != player.Classe.Defense+10 {
+		t.Fatalf("expected defense %d, got %d", player.Classe.Defense+10, player.Defense)
+	}
+}
