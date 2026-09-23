@@ -2,7 +2,7 @@ package ProjetRED
 
 import (
 	"fmt"
-	Menu "PrjoetRED/Menu"
+	Menu "ProjetRED/Menu"
 )
 
 func Ville1() {

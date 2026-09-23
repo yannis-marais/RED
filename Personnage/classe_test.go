@@ -1,5 +1,4 @@
 package ProjetRED
-package ProjetRED
 
 import "testing"
 

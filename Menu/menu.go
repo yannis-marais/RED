@@ -64,7 +64,7 @@ func MainMenu(p *personnage.Character) {
 		case 3:
 			Marchand.Marchand(func() {})
 		case 4:
-			Forgeron(*p)
+			Forgeron(p)
 		case 0:
 			fmt.Println("À bientôt !")
 			return
