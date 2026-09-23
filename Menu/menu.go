@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
 )
 
 var CurrentPlayer *personnage.Character
@@ -74,7 +73,7 @@ func StartMenu() {
 func MainMenu(p *personnage.Character) {
 	for {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
-		fmt.Println("1. Afficher les informations du personnage")
+		fmt.Println("1. Lancé la partie")
 		fmt.Println("2. Afficher les informations du personnage")
 		fmt.Println("3. Accéder à l'inventaire")
 		fmt.Println("4. Marchand")
