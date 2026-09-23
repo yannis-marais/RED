@@ -2,7 +2,7 @@ package ProjetRED
 
 import (
 	Marchand "ProjetRED/Marchand"
-	Menu "ProjetRED/Menu"
+	//Menu "ProjetRED/Menu"
 	"fmt"
 )
 
@@ -10,7 +10,7 @@ func Ville4() {
 	for {
 		if !QueteVille3Terminee {
 			fmt.Println("Tu dois d'abord terminer la quête du désert (ville 3) avant d'accéder à la ville 4.")
-			Menu.MainMenu()
+			//Menu.MainMenu()
 			return
 		}
 
@@ -35,7 +35,7 @@ func Ville4() {
 			fmt.Scanln(&saisie)
 
 			if saisie == "m" {
-				Menu.MainMenu()
+				//Menu.MainMenu()
 			}
 			if saisie == j || saisie == p {
 				break

@@ -1,4 +1,4 @@
-package projetRED
+package ProjetRED
 
 import (
 	personnage "ProjetRED/Personnage"

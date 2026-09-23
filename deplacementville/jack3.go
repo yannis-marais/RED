@@ -27,7 +27,7 @@ func Jack3() {
 		if saisie == o {
 			fmt.Println("merci tu vas sauver la ville et tout ses habitants")
 			fmt.Println("je te donnerais t'as récompense une fois le ver géant battu")
-			Ville1()
+			//Ville1()
 			return
 		}
 		if saisie == n {

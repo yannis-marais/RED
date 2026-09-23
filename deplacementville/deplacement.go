@@ -1,7 +1,8 @@
 package ProjetRED
 
 import (
-	Menu "ProjetRED/Menu"
+	personnage "ProjetRED/Personnage"
+	//Menu "ProjetRED/Menu"
 	"fmt"
 	"strconv"
 )
@@ -11,9 +12,14 @@ var vv2 = false
 var vv3 = false
 var vv4 = false
 
-func Deplacement() {
+func Deplacement(p *personnage.Character) {
 	villesValides := []bool{vv1, vv2, vv3, vv4}
-	villetransport := []func(){Ville1, Ville2, Ville3, Ville4}
+	villetransport := []func(){
+		func() { Ville1(p) },
+		func() { Ville2() },
+		func() { Ville3() },
+		func() { Ville4() },
+	}
 
 	for {
 		fmt.Println("aller vers : ")
@@ -27,7 +33,7 @@ func Deplacement() {
 		fmt.Scanln(&saisie)
 
 		if saisie == "m" {
-			Menu.MainMenu()
+			//Menu.MainMenu()
 		}
 
 		choixville, err := strconv.Atoi(saisie)
