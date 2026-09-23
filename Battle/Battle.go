@@ -3,8 +3,10 @@ package ProjetRED
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"strings"
 
+	Equipement "ProjetRED/Equipement"
 	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
 	enemies "ProjetRED/enemies"
@@ -28,34 +30,115 @@ func lifeBar(current, max, width int) string {
 	return "[" + strings.Repeat("█", filled) + strings.Repeat("░", width-filled) + "]"
 }
 
-func renderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMaxHP int) string {
+func renderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMaxHP, enemyRHP, enemyRMaxHP int) string {
 	if p.PV < 0 {
 		p.PV = 0
 	}
 	if enemyHP < 0 {
 		enemyHP = 0
 	}
+	if enemyRHP < 0 {
+		enemyRHP = 0
+	}
 
 	const width = 52
 	line := strings.Repeat("─", width)
 	playerBar := lifeBar(p.PV, p.PVMax, 18)
 	enemyBar := lifeBar(enemyHP, enemyMaxHP, 18)
+	enemyRBar := lifeBar(enemyRHP, enemyRMaxHP, 18)
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "\n╭%s╮\n", line)
 	fmt.Fprintf(&sb, "│ %-48s │\n", "MENU DE COMBAT")
 	fmt.Fprintf(&sb, "├%s┤\n", line)
 	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("%s : %d/%d %s", p.Nom, p.PV, p.PVMax, playerBar))
-	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("Ennemi : %s %d/%d %s", enemyName, enemyHP, enemyMaxHP, enemyBar))
+	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("Ennemi PV : %s %d/%d %s", enemyName, enemyHP, enemyMaxHP, enemyBar))
+	fmt.Fprintf(&sb, "│ %-48s │\n", fmt.Sprintf("Ennemi PVR : %s %d/%d %s", enemyName, enemyRHP, enemyRMaxHP, enemyRBar))
 	fmt.Fprintf(&sb, "├%s┤\n", line)
-	fmt.Fprintf(&sb, "│ %-48s │\n", "1. Attaque basique")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "2. Attaque spéciale")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "3. Skill / Magie")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "4. Inventaire")
-	fmt.Fprintf(&sb, "│ %-48s │\n", "5. Défendre")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "1. Attaque physique")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "2. Attaque spirituelle")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "3. Skills")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "4. Make a Wish")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "5. Inventaire")
+	fmt.Fprintf(&sb, "│ %-48s │\n", "6. Défendre")
 	fmt.Fprintf(&sb, "│ %-48s │\n", "0. Fuir")
 	fmt.Fprintf(&sb, "╰%s╯\n", line)
 	return sb.String()
+}
+
+func applySkill(p *personnage.Character, monstre *enemies.MONSTER, skillName string) bool {
+	if p == nil || monstre == nil {
+		return false
+	}
+
+	if cooldown, exists := p.Cooldowns[skillName]; exists && cooldown > 0 {
+		fmt.Printf("Le skill %s est en cooldown (%d tours restants).\n", skillName, cooldown)
+		return false
+	}
+
+	skillDef, okSkill := Equipement.SkillList[skillName]
+	if !okSkill {
+		fmt.Println("Ce skill n'existe pas dans la liste.")
+		return false
+	}
+
+	dmg := Equipement.CalculateSkillDamage(*p, skillDef)
+	if skillDef.Type == "Magic" {
+		if monstre.PVR > 0 {
+			monstre.PVR -= dmg
+			if monstre.PVR < 0 {
+				monstre.PVR = 0
+			}
+		}
+		fmt.Printf("\n%s lance %s et inflige %d dégâts spirituels à %s\n", p.Nom, skillName, dmg, monstre.NOM)
+		fmt.Printf("%s : PVR %d/%d\n", monstre.NOM, monstre.PVR, monstre.PVMAXR)
+	} else {
+		if monstre.PV > 0 {
+			monstre.PV -= dmg
+			if monstre.PV < 0 {
+				monstre.PV = 0
+			}
+		}
+		fmt.Printf("\n%s utilise %s et inflige %d dégâts physiques à %s\n", p.Nom, skillName, dmg, monstre.NOM)
+		fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
+	}
+
+	if skillDef.Cooldown > 0 {
+		p.Cooldowns[skillName] = skillDef.Cooldown
+	}
+	return true
+}
+
+func usePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
+	if p == nil || monstre == nil {
+		return false
+	}
+
+	if len(p.Skills) == 0 {
+		fmt.Println("Tu n'as aucun skill débloqué. Trouve un SkillBook pendant l'aventure.")
+		return false
+	}
+
+	names := make([]string, 0, len(p.Skills))
+	for name := range p.Skills {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	fmt.Println("=== Skills débloqués ===")
+	for i, name := range names {
+		skill := p.Skills[name]
+		cooldown := p.Cooldowns[name]
+		fmt.Printf("%d. %s (%s) - CD:%d\n", i+1, name, skill.Type, cooldown)
+	}
+
+	choice, ok := Menu.ReadChoice("Choisissez un skill : ")
+	if !ok || choice < 1 || choice > len(names) {
+		fmt.Println("Choix de skill invalide.")
+		return false
+	}
+
+	return applySkill(p, monstre, names[choice-1])
 }
 
 func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
@@ -65,7 +148,7 @@ func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 	}
 
 	for {
-		fmt.Print(renderCombatMenu(*p, monstre.NOM, monstre.PV, monstre.PVMax))
+		fmt.Print(renderCombatMenu(*p, monstre.NOM, monstre.PV, monstre.PVMax, monstre.PVR, monstre.PVMAXR))
 		choice, ok := Menu.ReadChoice("Votre choix : ")
 		if !ok {
 			fmt.Println("Choix invalide.")
@@ -100,15 +183,21 @@ func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 			return
 
 		case 3:
+			if usePlayerSkill(p, monstre) {
+				return
+			}
+			continue
+
+		case 4:
 			makeAWish(p, monstre)
 			return
 
-		case 4:
+		case 5:
 			Menu.ManageInventory(*p)
 			Menu.WaitForReturn()
 			continue
 
-		case 5:
+		case 6:
 			fmt.Println("\nVous prenez une position défensive. Vous attendez le prochain coup.")
 			return
 
@@ -166,131 +255,5 @@ func makeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
 		fmt.Println("One Shot ! L'ennemi est anéanti d'un coup")
 		monstre.PV = 0
 		monstre.PVR = 0
-	}
-}
-
-func runDemoAction(p *personnage.Character, monstre *enemies.MONSTER, choice int, log *strings.Builder) {
-	switch choice {
-	case 1:
-		degats := p.Strength
-		monstre.PV -= degats
-		if monstre.PV < 0 {
-			monstre.PV = 0
-		}
-		fmt.Fprintf(log, "%s attaque %s pour %d dégâts.\n", p.Nom, monstre.NOM, degats)
-		fmt.Fprintf(log, "%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
-	case 2:
-		degats := p.Reiki
-		monstre.PVR -= degats
-		if monstre.PVR < 0 {
-			monstre.PVR = 0
-		}
-		fmt.Fprintf(log, "%s utilise un sort spirituel sur %s pour %d dégâts.\n", p.Nom, monstre.NOM, degats)
-		fmt.Fprintf(log, "%s : PV %d/%d\n", monstre.NOM, monstre.PVR, monstre.PVMAXR)
-	case 3:
-		makeAWish(p, monstre)
-		fmt.Fprintf(log, "%s lance Make a Wish.\n", p.Nom)
-	case 5:
-		fmt.Fprintf(log, "%s se défend et attend le prochain coup.\n", p.Nom)
-	default:
-		fmt.Fprintf(log, "%s hésite et perd son tour.\n", p.Nom)
-	}
-}
-
-func RunDemoBattle(p *personnage.Character, monstre *enemies.MONSTER, actions []int) string {
-	if p == nil || monstre == nil {
-		return ""
-	}
-
-	var log strings.Builder
-	log.WriteString("=== Combat de démonstration ===\n")
-
-	for tour := 1; tour <= 12; tour++ {
-		log.WriteString(fmt.Sprintf("--- Tour %d ---\n", tour))
-
-		if p.Spd >= monstre.Spd {
-			choice := 1
-			if len(actions) > 0 {
-				choice = actions[0]
-				actions = actions[1:]
-			}
-			runDemoAction(p, monstre, choice, &log)
-			if enemies.IsMonsterDead(monstre) {
-				log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
-				return log.String()
-			}
-
-			enemies.MonsterAttackPattern(tour, monstre, p)
-			log.WriteString(fmt.Sprintf("%s : PV %d/%d\n", p.Nom, p.PV, p.PVMax))
-			if isDead(p) {
-				log.WriteString(fmt.Sprintf("%s est vaincu !\n", p.Nom))
-				return log.String()
-			}
-		} else {
-			enemies.MonsterAttackPattern(tour, monstre, p)
-			log.WriteString(fmt.Sprintf("%s : PV %d/%d\n", p.Nom, p.PV, p.PVMax))
-			if isDead(p) {
-				log.WriteString(fmt.Sprintf("%s est vaincu !\n", p.Nom))
-				return log.String()
-			}
-
-			choice := 1
-			if len(actions) > 0 {
-				choice = actions[0]
-				actions = actions[1:]
-			}
-			runDemoAction(p, monstre, choice, &log)
-			if enemies.IsMonsterDead(monstre) {
-				log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
-				return log.String()
-			}
-		}
-	}
-
-	if isDead(p) {
-		log.WriteString(fmt.Sprintf("%s est vaincu !\n", p.Nom))
-	} else if enemies.IsMonsterDead(monstre) {
-		log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
-	} else {
-		log.WriteString("Le combat se termine sans vainqueur clair.\n")
-	}
-
-	return log.String()
-}
-
-func trainingFight(p *personnage.Character, monstre *enemies.MONSTER) {
-	tour := 1
-
-	for {
-		fmt.Println("\n=== TOUR", tour, "===")
-
-		if p.Spd >= monstre.Spd {
-			characterTurn(p, monstre)
-			if enemies.IsMonsterDead(monstre) {
-				fmt.Println(monstre.NOM, "est vaincu !")
-				break
-			}
-
-			enemies.MonsterAttackPattern(tour, monstre, p)
-			if isDead(p) {
-				fmt.Println(p.Nom, "est vaincu !")
-				break
-			}
-
-		} else {
-			enemies.MonsterAttackPattern(tour, monstre, p)
-			if isDead(p) {
-				fmt.Println(p.Nom, "est vaincu !")
-				break
-			}
-
-			characterTurn(p, monstre)
-			if enemies.IsMonsterDead(monstre) {
-				fmt.Println(monstre.NOM, "est vaincu !")
-				break
-			}
-		}
-
-		tour++
 	}
 }
