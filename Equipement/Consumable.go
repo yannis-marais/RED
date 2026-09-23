@@ -36,7 +36,7 @@ func UseConsumable(p *personnage.Character, item Consumable) {
 		return
 	}
 
-	if item.Name == "Poison DOT Potion" {
+	if item.Name == PoisonDOTPotion.Name {
 		effect := personnage.StatusEffect{
 			Name:     "Poison",
 			Damage:   10,
@@ -56,6 +56,8 @@ func UseConsumable(p *personnage.Character, item Consumable) {
 		if p.PV < 0 {
 			p.PV = 0
 		}
-		p.Inventory.Consumables[item.Name] = qty - 1
 	}
+
+	p.Inventory.Consumables[item.Name] = qty - 1
+	fmt.Printf("%s utilise %s. PV : %d/%d\n", p.Nom, item.Name, p.PV, p.PVMax)
 }
