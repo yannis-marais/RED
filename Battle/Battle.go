@@ -323,7 +323,7 @@ func RunTerminalCombatDemo() {
 		case 4:
 			MakeAWish(&p, &monstre)
 		case 5:
-			Menu.ManageInventory(p)
+			Menu.ManageInventory(&p)
 			Menu.WaitForReturn()
 			continue
 		case 6:
@@ -403,7 +403,7 @@ func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
 			return
 
 		case 5:
-			Menu.ManageInventory(*p)
+			Menu.ManageInventory(p)
 			Menu.WaitForReturn()
 			continue
 

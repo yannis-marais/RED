@@ -1,10 +1,10 @@
 package main
 
 import (
-	//Equipement "ProjetRED/Equipement"
-  battle "ProjetRED/Battle"
+	Equipement "ProjetRED/Equipement"
+	//battle "ProjetRED/Battle"
 	Menu "ProjetRED/Menu"
-	//personnage "ProjetRED/Personnage"
+	personnage "ProjetRED/Personnage"
 )
 
 func main() {
