@@ -10,5 +10,5 @@ func Plaine() {
 	fmt.Println("Mouahahaha")
 	fmt.Println("ma fois, tu sera peut être un divertissement pour moi, qui suis... ")
 	fmt.Println("le maître craint et incontester de tous...")
-	fmt.Println("aurevoir")
+	fmt.Println("MAXIME le BOSS!!!")
 }

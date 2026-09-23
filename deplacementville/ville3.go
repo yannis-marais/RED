@@ -1,38 +1,42 @@
 package ProjetRED
 
 import (
-	"fmt"
+    Marchand "ProjetRED/Marchand"
+    "fmt"
 )
 
 func Ville3() {
-	const d = "d"
-	const j = "j"
+    const d = "d"
+    const j = "j"
+    const a = "a"
 
-	transportdansvilletrois := map[string]func(){
-		j: Jack3,
-		d: Desert,
-	}
+    transportdansvilletrois := map[string]func(){
+        j: Jack3,
+        d: Desert,
+        a: func() { Marchand.Marchand(Ville3) },
+    }
 
-	var saisie string
+    var saisie string
 
-	for {
-		fmt.Println("vous êtes dans la ville 3")
-		fmt.Println("appui sur m pour le menu")
-		fmt.Println("appui sur j pour aller parler a jack (conseiller avant le desert)")
-		fmt.Println("appui sur d pour aller dans le desert")
+    for {
+        fmt.Println("vous êtes dans la ville 3")
+        fmt.Println("appui sur m pour le menu")
+        fmt.Println("appui sur j pour aller parler a jack (conseiller avant le desert)")
+        fmt.Println("appui sur d pour aller dans le desert")
+        fmt.Println("ou bien a pour le marchand")
 
-		fmt.Scanln(&saisie)
+        fmt.Scanln(&saisie)
 
-		if saisie == "m" {
-			Menuvilleversville()
-			return
-		}
-		if saisie == j || saisie == d {
-			break
-		}
+        if saisie == "m" {
+            Menuvilleversville()
+            return
+        }
+        if saisie == j || saisie == d || saisie == a {
+            break
+        }
 
-		fmt.Println("erreur, veuillez entrer une lettre d, j ou m pour le menu")
-	}
+        fmt.Println("erreur, veuillez entrer une lettre d, j ou m pour le menu")
+    }
 
-	transportdansvilletrois[saisie]()
+    transportdansvilletrois[saisie]()
 }
