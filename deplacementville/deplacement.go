@@ -1,7 +1,7 @@
 package ProjetRED
 
 import (
-	Menu "PrjoetRED/Menu"
+	Menu "ProjetRED/Menu"
 	"fmt"
 	"strconv"
 )

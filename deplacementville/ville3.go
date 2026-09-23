@@ -1,8 +1,8 @@
 package ProjetRED
 
 import (
-	Menu "PrjoetRED/Menu"
 	Marchand "ProjetRED/Marchand"
+	Menu "ProjetRED/Menu"
 	"fmt"
 )
 
@@ -10,7 +10,7 @@ func Ville3() {
 	for {
 		if !QueteVille2Terminee {
 			fmt.Println("Tu dois d'abord terminer la quête de la grotte (ville 2) avant d'accéder à la ville 3.")
-			Menuvilleversville()
+			Menu.MainMenu()
 			return
 		}
 

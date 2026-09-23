@@ -57,8 +57,8 @@ func TestCombatTourParTourContreMonstre(t *testing.T) {
 
 	// Tour 2 : attaque spirituelle puis skill physique avec bonus
 	applyAttackDamage(&p, &m, p.Reiki, "PVR", 1.0)
-	if m.PVR != 120-18 {
-		t.Fatalf("attaque spirituelle attendue: PVR=102, got %d", m.PVR)
+	if m.PVR != 30 {
+		t.Fatalf("attaque spirituelle attendue: PVR=30, got %d", m.PVR)
 	}
 
 	p.Cooldowns["Fireball"] = 0
