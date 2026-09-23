@@ -17,8 +17,8 @@ func main() {
 	jean.PV = 20
 	Menu.DisplayInfo(jean)
 	Menu.AccessInventory(jean)
-	Menu.ManageInventory(jean)
-	Menu.MainMenu(jean)
+	Menu.ManageInventory(&jean)
+	Menu.MainMenu(&jean)
 
 }
 func turn() {

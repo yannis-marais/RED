@@ -47,7 +47,7 @@ var ForgeRecipes = map[string]Recipe{
 	},
 }
 
-func Forge(p Personnage.Character, itemName string) {
+func Forge(p *Personnage.Character, itemName string) {
 	recipe, ok := ForgeRecipes[itemName]
 	if !ok {
 		fmt.Println("Recette inconnue :", itemName)
@@ -69,7 +69,7 @@ func Forge(p Personnage.Character, itemName string) {
 	}
 
 	// Donner l'objet forgé
-	Equipement.AddItem(&p, recipe.Result)
+	Equipement.AddItem(p, recipe.Result)
 
 	fmt.Println(p.Nom, "a forgé :", itemName)
 }

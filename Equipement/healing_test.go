@@ -40,7 +40,7 @@ func TestEquipItemByNameReplacesOldEquipmentAndUpdatesStats(t *testing.T) {
 	}
 	player.Weapon = "Bandit_Spear"
 
-	EquipItemByName(&player, "Swordshield", Weapon)
+	EquipItem(&player, "Swordshield")
 
 	if player.Weapon != "Swordshield" {
 		t.Fatalf("expected weapon to be equipped as Swordshield, got %s", player.Weapon)
