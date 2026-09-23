@@ -1,10 +1,10 @@
 package main
 
 import (
-	Equipement "ProjetRED/Equipement"
-
+	//Equipement "ProjetRED/Equipement"
+  battle "ProjetRED/Battle"
 	Menu "ProjetRED/Menu"
-	personnage "ProjetRED/Personnage"
+	//personnage "ProjetRED/Personnage"
 )
 
 func main() {
@@ -19,6 +19,7 @@ func main() {
 	Menu.AccessInventory(jean)
 	Menu.ManageInventory(&jean)
 	Menu.MainMenu(&jean)
+  //battle.RunTerminalCombatDemo()
 
 }
 func turn() {
