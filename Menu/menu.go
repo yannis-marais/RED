@@ -1,6 +1,7 @@
 package projetRED
 
 import (
+	Marchand "ProjetRED/Marchand"
 	Equipement "ProjetRED/Equipement"
 	personnage "ProjetRED/Personnage"
 	"bufio"
@@ -61,7 +62,7 @@ func MainMenu(p personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 3:
-			Marchand(p)
+			Marchand.Marchand()
 		case 4:
 			Forgeron(p)
 		case 0:

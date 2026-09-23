@@ -13,7 +13,8 @@ func main() {
 	Equipement.AddItem(jean, Equipement.Items["Swordshield"])
 	Equipement.AddConsumable(&jean, Equipement.HealingPotion)
 	Equipement.AddItem(jean, Equipement.Items["Dagger"])
-	jean.PV = 1
+	Equipement.AddConsumable(&jean, Equipement.PoisonDOTPotion)
+	jean.PV = 20
 	Menu.DisplayInfo(jean)
 	Menu.AccessInventory(jean)
 	Menu.ManageInventory(jean)
