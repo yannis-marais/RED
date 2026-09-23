@@ -23,10 +23,6 @@ func Jack2() {
 		saisie = ""
 		fmt.Scanln(&saisie)
 
-		if saisie == "m" {
-			Menuvilleversville()
-			return
-		}
 		if saisie == o {
 			fmt.Println("merci tu vas sauver la ville et tout ses habitants")
 			fmt.Println("je te donnerais t'as récompense une fois l'ogre  battu")

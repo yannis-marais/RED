@@ -1,44 +1,52 @@
 package ProjetRED
 
 import (
-    Marchand "ProjetRED/Marchand"
-    "fmt"
+	Marchand "ProjetRED/Marchand"
+	"fmt"
+    Menu "PrjoetRED/Menu"
 )
 
 func Ville4() {
-    const j = "j"
-    const p = "p"
-    const a = "a"
+	for {
+		if !QueteVille3Terminee {
+			fmt.Println("Tu dois d'abord terminer la quête du désert (ville 3) avant d'accéder à la ville 4.")
+			Menuvilleversville()
+			return
+		}
 
-    transportdansvillequatre := map[string]func(){
-        j: Jack4,
-        p: Plaine,
-        a: func() { Marchand.Marchand(Ville4) },
-    }
-    var saisie string
+		const j = "j"
+		const p = "p"
+		const a = "a"
 
-    for {
-        fmt.Println("vous êtes dans la ville 4")
-        fmt.Println("appui sur m pour le menu")
-        fmt.Println("appui sur j pour aller parler a jack (conseiller avant la plaine)")
-        fmt.Println("appui sur p pour aller dans la plaine")
-        fmt.Println("ou bien a pour le marchand")
+		transportdansvillequatre := map[string]func(){
+			j: Jack4,
+			p: Plaine,
+			a: func() { Marchand.Marchand(Ville4) },
+		}
+		var saisie string
 
-        fmt.Scanln(&saisie)
+		for {
+			fmt.Println("vous êtes dans la ville 4")
+			fmt.Println("appui sur m pour le menu")
+			fmt.Println("appui sur j pour aller parler a jack (conseiller avant la plaine)")
+			fmt.Println("appui sur p pour aller dans la plaine")
+			fmt.Println("ou bien a pour le marchand")
 
-        if saisie == "m" {
-            Menuvilleversville()
-            return
-        }
-        if saisie == j || saisie == p {
-            break
-        }
-        if saisie == a {
-            break
-        }
+			fmt.Scanln(&saisie)
 
-        fmt.Println("erreur, veuillez entrer une lettre p, j ou m pour le menu")
-    }
+			if saisie == "m" {
+				Menu.MainMenu()
+			}
+			if saisie == j || saisie == p {
+				break
+			}
+			if saisie == a {
+				break
+			}
 
-    transportdansvillequatre[saisie]()
+			fmt.Println("erreur, veuillez entrer une lettre p, j ou m pour le menu")
+		}
+
+		transportdansvillequatre[saisie]()
+	}
 }

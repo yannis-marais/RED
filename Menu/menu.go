@@ -1,6 +1,7 @@
 package projetRED
 
 import (
+	//Marchand "ProjetRED/Marchand"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
@@ -25,8 +26,7 @@ func StartMenu() {
 	}
 	switch choice {
 	case 1:
-		nom, classe := CreerPerso()
-		Player := personnage.CharacterCreation(nom, classe)
+		Player := personnage.CharacterCreation(CreerPerso())
 		MainMenu(Player)
 	case 0:
 		fmt.Println("Au Revoir !")
@@ -159,6 +159,10 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Inventaire")
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
+	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
+	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
+
+	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Objets")
 	ecrireSection(&sb, p.Inventory.Items)
 
@@ -218,9 +222,9 @@ func CreerPerso() (string, personnage.Classe) {
 	case 1:
 		return nom, personnage.Classes["Ronin"]
 	case 2:
-		return nom, personnage.Classes["Cuirasé"]
+		return nom, personnage.Classes["Cuirassé"]
 	case 3:
-		return nom, personnage.Classes["mage spirituel"]
+		return nom, personnage.Classes["Mage spirituel"]
 	default:
 		fmt.Println("Choix invalide, classe par défaut : Ronin")
 		return nom, personnage.Classes["Ronin"]
