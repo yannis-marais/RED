@@ -1,5 +1,11 @@
 package world
 
+import (
+	"math/rand"
+
+	enemies "ProjetRED/enemies"
+)
+
 // DungeonDefinition représente un donjon associé à une ville.
 type DungeonDefinition struct {
 	Name     string
@@ -38,4 +44,24 @@ func GetMonsterNamesForCity(cityName string) []string {
 		return nil
 	}
 	return append([]string(nil), dungeon.Monsters...)
+}
+
+func RandomMonsterNameForCity(cityName string) (string, bool) {
+	names := GetMonsterNamesForCity(cityName)
+	if len(names) == 0 {
+		return "", false
+	}
+	return names[rand.Intn(len(names))], true
+}
+
+func RandomMonsterForCity(cityName string) (*enemies.MONSTER, bool) {
+	monsterName, ok := RandomMonsterNameForCity(cityName)
+	if !ok {
+		return nil, false
+	}
+	monster, ok := enemies.NewMonsterByName(monsterName)
+	if !ok {
+		return nil, false
+	}
+	return monster, true
 }
