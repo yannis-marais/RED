@@ -1,8 +1,8 @@
 package ProjetRED
 
 import (
-	enemies "ProjetRED/enemies"
 	personnage "ProjetRED/Personnage"
+	enemies "ProjetRED/enemies"
 	"ProjetRED/world"
 	"fmt"
 	"time"
@@ -14,43 +14,86 @@ var HeritierProgress int
 
 func VilleH(p *personnage.Character) {
 	Faction = "Heritier"
+	if HeritierProgress == 2 {
+		for {
+			fmt.Println("\n==== Maison du Prince Héritier ====")
+			fmt.Printf("%s se trouve dans la cour bien entretenue de la maison royale.\n", p.Nom)
+			fmt.Println("1: Parler au capitaine Kaito, chef de la garde du prince")
+			fmt.Println("2: Accompagner la patrouille aux abords du camp")
+			fmt.Println("3: Se Diriger vers la capital")
+			fmt.Println("4: pour ouvrir le menu")
+			fmt.Println("0: pour quitter")
 
-	for {
-		fmt.Println("\n==== Maison du Prince Héritier ====")
-		fmt.Printf("%s se trouve dans la cour bien entretenue de la maison royale.\n", p.Nom)
-		fmt.Println("1: Parler au capitaine Kaito, chef de la garde du prince")
-		fmt.Println("2: Accompagner la patrouille aux abords du camp")
-		fmt.Println("3: pour ouvrir le menu")
-		fmt.Println("0: pour quitter")
-
-		choice, ok := readChoice("Votre choix : ")
-		if !ok {
-			fmt.Println("Erreur, veuillez entrer un choix valide")
-			WaitForReturn()
-			continue
-		}
-
-		switch choice {
-		case 3:
-			if OpenMenu != nil {
-				OpenMenu(p)
+			choice, ok := readChoice("Votre choix : ")
+			if !ok {
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
 				continue
 			}
-			fmt.Println("Le menu principal n'est pas disponible.")
-		case 1:
-			capitaineKaito(p)
-		case 2:
-			if patrouille(p) {
-				// La quête de la maison du prince héritier est terminée :
-				// on enchaîne directement sur la capitale.
+
+			switch choice {
+			case 4:
+				if OpenMenu != nil {
+					OpenMenu(p)
+					continue
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
+			case 1:
+				capitaineKaito(p)
+			case 2:
+				if patrouille(p) {
+					// La quête de la maison du prince héritier est terminée :
+					// on enchaîne directement sur la capitale.
+					Ville4(p, "Heritier")
+					return
+				}
+			case 3:
 				Ville4(p, "Heritier")
+			case 0:
 				return
+			default:
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
 			}
-		case 0:
-			return
-		default:
-			fmt.Println("Erreur, veuillez entrer un choix valide")
-			WaitForReturn()
+		}
+	} else {
+		for {
+			fmt.Println("\n==== Maison du Prince Héritier ====")
+			fmt.Printf("%s se trouve dans la cour bien entretenue de la maison royale.\n", p.Nom)
+			fmt.Println("1: Parler au capitaine Kaito, chef de la garde du prince")
+			fmt.Println("2: Accompagner la patrouille aux abords du camp")
+			fmt.Println("3: pour ouvrir le menu")
+			fmt.Println("0: pour quitter")
+
+			choice, ok := readChoice("Votre choix : ")
+			if !ok {
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
+				continue
+			}
+
+			switch choice {
+			case 3:
+				if OpenMenu != nil {
+					OpenMenu(p)
+					continue
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
+			case 1:
+				capitaineKaito(p)
+			case 2:
+				if patrouille(p) {
+					// La quête de la maison du prince héritier est terminée :
+					// on enchaîne directement sur la capitale.
+					Ville4(p, "Heritier")
+					return
+				}
+			case 0:
+				return
+			default:
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
+			}
 		}
 	}
 }
