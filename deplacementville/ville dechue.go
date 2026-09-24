@@ -14,43 +14,87 @@ var DechuProgress int
 
 func VilleD(p *personnage.Character) {
 	Faction = "Dechu"
+	if DechuProgress == 2 {
+		for {
+			fmt.Println("\n==== Maison du Prince Déchu ====")
+			fmt.Printf("%s se trouve dans la cour désordonnée mais grouillante de vie de la maison déchue.\n", p.Nom)
+			fmt.Println("1: Parler à Renard, meneur officieux des partisans")
+			fmt.Println("2: Partir chasser la bête qui rôde près du campement")
+			fmt.Println("3: Se Diriger vers la capital")
+			fmt.Println("4: pour ouvrir le menu")
+			fmt.Println("0: pour quitter")
 
-	for {
-		fmt.Println("\n==== Maison du Prince Déchu ====")
-		fmt.Printf("%s se trouve dans la cour désordonnée mais grouillante de vie de la maison déchue.\n", p.Nom)
-		fmt.Println("1: Parler à Renard, meneur officieux des partisans")
-		fmt.Println("2: Partir chasser la bête qui rôde près du campement")
-		fmt.Println("3: pour ouvrir le menu")
-		fmt.Println("0: pour quitter")
-
-		choice, ok := readChoice("Votre choix : ")
-		if !ok {
-			fmt.Println("Erreur, veuillez entrer un choix valide")
-			WaitForReturn()
-			continue
-		}
-
-		switch choice {
-		case 3:
-			if OpenMenu != nil {
-				OpenMenu(p)
+			choice, ok := readChoice("Votre choix : ")
+			if !ok {
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
 				continue
 			}
-			fmt.Println("Le menu principal n'est pas disponible.")
-		case 1:
-			renard(p)
-		case 2:
-			if chasse(p) {
-				// La quête de la maison du prince déchu est terminée :
-				// on enchaîne directement sur la capitale.
-				Ville4(p, "Dechu")
+
+			switch choice {
+			case 4:
+				if OpenMenu != nil {
+					OpenMenu(p)
+					continue
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
+			case 1:
+				renard(p)
+			case 2:
+				if chasse(p) {
+					// La quête de la maison du prince déchu est terminée :
+					// on enchaîne directement sur la capitale.
+					Ville4(p, "Dechu")
+					return
+				}
+			case 3:
+				Ville4(p,"Dechu")
+			case 0:
 				return
+			default:
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
 			}
-		case 0:
-			return
-		default:
-			fmt.Println("Erreur, veuillez entrer un choix valide")
-			WaitForReturn()
+		}		
+
+	}else{
+		for {
+			fmt.Println("\n==== Maison du Prince Déchu ====")
+			fmt.Printf("%s se trouve dans la cour désordonnée mais grouillante de vie de la maison déchue.\n", p.Nom)
+			fmt.Println("1: Parler à Renard, meneur officieux des partisans")
+			fmt.Println("2: Partir chasser la bête qui rôde près du campement")
+			fmt.Println("3: pour ouvrir le menu")
+			fmt.Println("0: pour quitter")
+
+			choice, ok := readChoice("Votre choix : ")
+			if !ok {
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
+				continue
+			}
+
+			switch choice {
+			case 3:
+				if OpenMenu != nil {
+					OpenMenu(p)
+					continue
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
+			case 1:
+				renard(p)
+			case 2:
+				if chasse(p) {
+					// La quête de la maison du prince déchu est terminée :
+					// on enchaîne directement sur la capitale.
+					Ville4(p, "Dechu")
+					return
+				}
+			case 0:
+				return
+			default:
+				fmt.Println("Erreur, veuillez entrer un choix valide")
+				WaitForReturn()
+			}
 		}
 	}
 }
