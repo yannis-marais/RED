@@ -1,6 +1,9 @@
 package ProjetRED
 
-import "math/rand"
+import (
+	"math/rand"
+	"strings"
+)
 
 type LootEntry struct {
 	Name string
@@ -18,6 +21,92 @@ type MONSTER struct {
 	Spd      int
 	Reiki    int
 	Loot     []LootEntry
+}
+
+func NormalizeMonsterName(name string) string {
+	normalized := strings.ToLower(strings.TrimSpace(name))
+	normalized = strings.ReplaceAll(normalized, "_", "-")
+	normalized = strings.ReplaceAll(normalized, " ", "-")
+
+	switch normalized {
+	case "goblin", "gobelin":
+		return "gobelin"
+	case "squelet", "squelette", "skeleton":
+		return "squelette"
+	case "troll":
+		return "troll"
+	case "vouivre":
+		return "vouivre"
+	case "loup-garou", "loupgarou", "loup_garou":
+		return "loup-garou"
+	case "zombie":
+		return "zombie"
+	case "orc":
+		return "orc"
+	case "dragon":
+		return "dragon"
+	case "le-b.", "leb", "le b.", "le-b", "le b":
+		return "Le B."
+	case "le-ant", "leant", "le ant":
+		return "Le Ant"
+	case "le-l", "lel", "le l":
+		return "Le L"
+	case "le-relou", "lerelou", "le relou":
+		return "Le RELOU"
+	default:
+		return normalized
+	}
+}
+
+func NewMonsterByName(name string) (*MONSTER, bool) {
+	normalized := NormalizeMonsterName(name)
+
+	var monster MONSTER
+	switch normalized {
+	case "gobelin":
+		monster = initGoblin()
+	case "squelette":
+		monster = initSkeleton()
+	case "troll":
+		monster = initTroll()
+	case "vouivre":
+		monster = initVouivre()
+	case "loup-garou":
+		monster = initLoupGarou()
+	case "zombie":
+		monster = initZombie()
+	case "orc":
+		monster = initOrc()
+	case "dragon":
+		monster = initDragon()
+	case "Le B.", "Le Ant", "Le L", "Le RELOU":
+		switch normalized {
+		case "Le B.":
+			monster = initBrian()
+		case "Le Ant":
+			monster = initAnt()
+		case "Le L":
+			monster = initLucas()
+		case "Le RELOU":
+			monster = initYannis()
+		}
+	default:
+		return nil, false
+	}
+
+	return &monster, true
+}
+
+func CreateMonsterByName(name string) (*MONSTER, bool) {
+	return NewMonsterByName(name)
+}
+
+func CreateMonster(name string) (*MONSTER, bool) {
+	return NewMonsterByName(name)
+}
+
+func SpawnMonster(name string) (*MONSTER, bool) {
+	return NewMonsterByName(name)
 }
 
 func initGoblin() MONSTER {
