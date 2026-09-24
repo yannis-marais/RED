@@ -135,23 +135,47 @@ func Marchand(p *personnage.Character) {
 			continue
 		}
 
-		item, ok := Equipement.Items[nomChoisi]
-		if !ok {
+		if !acheterObjet(p, nomChoisi) {
 			fmt.Println("objet indisponible")
 			continue
 		}
 
-		before := p.Inventory.Items[item.Name]
-		Equipement.AddItem(p, item)
-		if p.Inventory.Items[item.Name] <= before {
-			fmt.Println("impossible d'ajouter l'objet à l'inventaire (inventaire plein ?)")
-			continue
-		}
-
-		p.Purse -= uint(prixAchat)
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
 	}
+}
+
+func acheterObjet(p *personnage.Character, nom string) bool {
+	if p == nil {
+		return false
+	}
+
+	cout, ok := prix[nom]
+	if !ok || p.Purse < uint(cout) {
+		return false
+	}
+
+	if item, ok := Equipement.Items[nom]; ok {
+		before := p.Inventory.Items[item.Name]
+		Equipement.AddItem(p, item)
+		if p.Inventory.Items[item.Name] <= before {
+			return false
+		}
+		p.Purse -= uint(cout)
+		return true
+	}
+
+	if consumable, ok := Equipement.GetConsumableByName(nom); ok {
+		before := p.Inventory.Consumables[consumable.Name]
+		Equipement.AddConsumable(p, consumable)
+		if p.Inventory.Consumables[consumable.Name] <= before {
+			return false
+		}
+		p.Purse -= uint(cout)
+		return true
+	}
+
+	return false
 }
 
 func vendre(p *personnage.Character) {

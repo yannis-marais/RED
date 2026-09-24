@@ -2,6 +2,7 @@ package ProjetRED
 
 import (
 	"fmt"
+	"strings"
 
 	personnage "ProjetRED/Personnage"
 )
@@ -170,7 +171,27 @@ var ConsumablesRegistry = map[string]Consumable{
 	Pain.Name:            Pain,
 }
 
+var ConsumableAliases = map[string]string{
+	"Healing_Potion":    HealingPotion.Name,
+	"Poison_DOT_Potion": PoisonDOTPotion.Name,
+	"Pain":              Pain.Name,
+}
+
 func GetConsumableByName(name string) (Consumable, bool) {
-	item, ok := ConsumablesRegistry[name]
-	return item, ok
+	if item, ok := ConsumablesRegistry[name]; ok {
+		return item, true
+	}
+
+	normalized := strings.ReplaceAll(name, "_", " ")
+	if item, ok := ConsumablesRegistry[normalized]; ok {
+		return item, true
+	}
+
+	if canonical, ok := ConsumableAliases[name]; ok {
+		if item, ok := ConsumablesRegistry[canonical]; ok {
+			return item, true
+		}
+	}
+
+	return Consumable{}, false
 }
