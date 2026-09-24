@@ -9,7 +9,7 @@ import (
 )
 
 // HeritierProgress suit l'avancée du joueur dans la maison du prince héritier.
-// 0: vient d'arriver, 1: a parlé au capitaine, 2: a remporté la patrouille (prêt pour la capitale)
+// 0: vient d'arriver, 1: a parlé au capitaine (peut partir en patrouille)
 var HeritierProgress int
 
 func VilleH(p *personnage.Character) {
@@ -20,9 +20,6 @@ func VilleH(p *personnage.Character) {
 		fmt.Printf("%s se trouve dans la cour bien entretenue de la maison royale.\n", p.Nom)
 		fmt.Println("1: Parler au capitaine Kaito, chef de la garde du prince")
 		fmt.Println("2: Accompagner la patrouille aux abords du camp")
-		if HeritierProgress >= 2 {
-			fmt.Println("4: Prendre la route vers la capitale pour le couronnement")
-		}
 		fmt.Println("3: pour ouvrir le menu")
 		fmt.Println("0: pour quitter")
 
@@ -43,14 +40,12 @@ func VilleH(p *personnage.Character) {
 		case 1:
 			capitaineKaito(p)
 		case 2:
-			patrouille(p)
-		case 4:
-			if HeritierProgress >= 2 {
+			if patrouille(p) {
+				// La quête de la maison du prince héritier est terminée :
+				// on enchaîne directement sur la capitale.
 				Ville4(p, "Heritier")
 				return
 			}
-			fmt.Println("Il te reste encore des choses à faire ici avant de partir.")
-			WaitForReturn()
 		case 0:
 			return
 		default:
@@ -72,14 +67,17 @@ func capitaineKaito(p *personnage.Character) {
 	WaitForReturn()
 }
 
-func patrouille(p *personnage.Character) {
+// patrouille fait affronter un monstre de ville2 au joueur.
+// Elle renvoie true si la quête est validée (victoire), ce qui déclenche
+// automatiquement l'enchaînement vers Ville4.
+func patrouille(p *personnage.Character) bool {
 	fmt.Printf("%s se présente devant les soldats en formation, prêts pour la ronde du matin.\n", p.Nom)
 	time.Sleep(500 * time.Millisecond)
 
 	if HeritierProgress < 1 {
 		fmt.Println("Un garde vous arrête. « On ne prend que des recrues recommandées. Parle d'abord au capitaine. »")
 		WaitForReturn()
-		return
+		return false
 	}
 
 	fmt.Println("La patrouille avance en silence jusqu'à la lisière des bois qui bordent le camp...")
@@ -89,23 +87,23 @@ func patrouille(p *personnage.Character) {
 	if !ok || monstre == nil {
 		fmt.Println("La ronde se termine sans incident : les bois sont calmes ce matin-là.")
 		WaitForReturn()
-		return
+		return false
 	}
 
 	fmt.Printf("Un %s jaillit soudain des fourrés, crocs en avant !\n", monstre.NOM)
 
 	if StartCombat == nil {
 		fmt.Println("Le système de combat n'est pas encore connecté (la variable StartCombat n'a pas été assignée).")
-		return
+		return false
 	}
 
 	if StartCombat(p, monstre) {
-		fmt.Println("La patrouille rentre victorieuse. Le vétéran vous frappe l'épaule : « Tu as ta place parmi nous. La route vers la capitale t'est ouverte. »")
-		if HeritierProgress < 2 {
-			HeritierProgress = 2
-		}
-	} else {
-		fmt.Println("La patrouille bat en retraite dans le désordre. Il faudra retenter ta chance pour gagner leur confiance.")
+		fmt.Println("La patrouille rentre victorieuse. Le vétéran vous frappe l'épaule : « Tu as ta place parmi nous. En route pour la capitale. »")
+		WaitForReturn()
+		return true
 	}
+
+	fmt.Println("La patrouille bat en retraite dans le désordre. Il faudra retenter ta chance pour gagner leur confiance.")
 	WaitForReturn()
+	return false
 }
