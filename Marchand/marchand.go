@@ -72,8 +72,8 @@ var prix = map[string]int{
 	"Leather_Patch":     10,
 	"Boots":             10,
 	"Fork":              5,
-	"Healing_Potion":    60,
-	"Poison_DOT_Potion": 60,
+	"Healing_Potion":    20,
+	"Poison_DOT_Potion": 30,
 	"Pain":              15,
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
