@@ -126,7 +126,7 @@ func MainMenu(p *personnage.Character) {
 			}
 			WaitForReturn()
 		case 8:
-			monstre, ok := Monster.SpawnMonster(world.Aleatoire("ville1"))
+			monstre, ok := Monster.SpawnMonster(world.Aleatoire("Ville 1"))
 			if !ok {
 				fmt.Println("Impossible de créer le monstre d'entraînement.")
 				continue
@@ -365,7 +365,6 @@ func DisplayItem(p personnage.Character) []string {
 	return names
 }
 
- 
 // Crée une nouvelle func qui permet de lister tout ce qu'il y a dans la partie Inventory.Consumables
 func DisplayConsumables(p personnage.Character) []string {
 	if len(p.Inventory.Consumables) == 0 {
