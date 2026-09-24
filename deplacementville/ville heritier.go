@@ -22,7 +22,7 @@ func VilleH(p *personnage.Character) {
 		transportdansvilledeux := map[string]func(){
 			j: Jack2,
 			g: Grotte,
-			a: func() { Marchand.Marchand(VilleD) },
+			a: func() { Marchand.Marchand(p) },
 		}
 
 		var saisie string

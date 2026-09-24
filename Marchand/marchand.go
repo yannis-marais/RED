@@ -77,7 +77,7 @@ var inventaire = map[string]int{}
 
 // Marchand affiche le menu unique du marchand : achat d'objets tirés au
 // hasard dans le catalogue, amélioration de l'inventaire et vente d'objets.
-func Marchand(p *personnage.Character, retour func()) {
+func Marchand(p *personnage.Character) {
 	if p == nil {
 		return
 	}
@@ -101,16 +101,13 @@ func Marchand(p *personnage.Character, retour func()) {
 		}
 		fmt.Printf("u - Upgrade inventaire : +%d emplacements pour %d pièces\n", inventoryUpgradeSize, InventoryUpgradeCost(p))
 		fmt.Println("v - Vendre un objet de ton inventaire")
-		fmt.Println("q - Quitter le marchand")
+		fmt.Println("0 - Quitter le marchand")
 
 		var saisie string
 		fmt.Scanln(&saisie)
 
 		switch saisie {
-		case "q":
-			if retour != nil {
-				retour()
-			}
+		case "0":
 			return
 		case "v":
 			vendre(p)

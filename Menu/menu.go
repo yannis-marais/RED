@@ -1,10 +1,10 @@
 package ProjetRED
 
 import (
-	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
+	City "ProjetRED/deplacementville"
 	"bufio"
 	"fmt"
 	"os"
@@ -99,11 +99,7 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.MarchandForPlayer(p, func() {})
-		case 5:
-			Forgeron(p)
-		case 6:
-			if err := SaveCurre			Marchand.Marchand(func() {})
+			Marchand.Marchand(p)
 		case 5:
 			Forgeron(p)
 		case 6:
@@ -120,6 +116,7 @@ func MainMenu(p *personnage.Character) {
 			} else {
 				fmt.Println("Partie chargée depuis save.json")
 				CurrentPlayer = player
+				*p = *player
 			}
 			WaitForReturn()
 		case 0:
@@ -227,7 +224,12 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Consommables")
 	ecrireSection(&sb, p.Inventory.Consumables)
- ecrireSection affiche une map triée par clé, avec un message si elle est vide.
+
+	fmt.Fprintf(&sb, "╰%s╯\n", ligne)
+	return sb.String()
+}
+
+// ecrireSection affiche une map triée par clé, avec un message si elle est vide.
 func ecrireSection(sb *strings.Builder, items map[string]int) {
 	if len(items) == 0 {
 		fmt.Fprintf(sb, "│   %-36s │\n", "Aucun")

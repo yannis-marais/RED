@@ -18,7 +18,7 @@ func Deplacement(p *personnage.Character) {
 		func() { Ville1(p) },
 		func() { VilleD(p) },
 		func() { VilleH(p) },
-		func() { Ville4() },
+		func() { Ville4(p) },
 	}
 
 	for {
