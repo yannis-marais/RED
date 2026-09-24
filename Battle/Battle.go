@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"strings"
 
+	Equipement "ProjetRED/Equipement"
 	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
 	enemies "ProjetRED/enemies"
@@ -12,6 +13,22 @@ import (
 
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
+}
+
+func giveMonsterLoot(p *personnage.Character, monstre *enemies.MONSTER, log *strings.Builder) {
+	if p == nil || monstre == nil {
+		return
+	}
+
+	for _, materialName := range enemies.RollLoot(monstre) {
+		if Equipement.AddMaterial(p, materialName) {
+			if log != nil {
+				fmt.Fprintf(log, "%s récupère 1 %s.\n", p.Nom, materialName)
+			} else {
+				fmt.Printf("%s récupère 1 %s.\n", p.Nom, materialName)
+			}
+		}
+	}
 }
 
 func lifeBar(current, max, width int) string {
@@ -215,8 +232,9 @@ func RunDemoBattle(p *personnage.Character, monstre *enemies.MONSTER, actions []
 				actions = actions[1:]
 			}
 			runDemoAction(p, monstre, choice, &log)
-			if enemies.IsMonsterDead(monstre) {
+			if enemies.IsMonsterDead(monstre) && !isDead(p) {
 				log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
+				giveMonsterLoot(p, monstre, &log)
 				return log.String()
 			}
 
@@ -240,8 +258,9 @@ func RunDemoBattle(p *personnage.Character, monstre *enemies.MONSTER, actions []
 				actions = actions[1:]
 			}
 			runDemoAction(p, monstre, choice, &log)
-			if enemies.IsMonsterDead(monstre) {
+			if enemies.IsMonsterDead(monstre) && !isDead(p) {
 				log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
+				giveMonsterLoot(p, monstre, &log)
 				return log.String()
 			}
 		}
@@ -249,8 +268,9 @@ func RunDemoBattle(p *personnage.Character, monstre *enemies.MONSTER, actions []
 
 	if isDead(p) {
 		log.WriteString(fmt.Sprintf("%s est vaincu !\n", p.Nom))
-	} else if enemies.IsMonsterDead(monstre) {
+	} else if enemies.IsMonsterDead(monstre) && !isDead(p) {
 		log.WriteString(fmt.Sprintf("%s est vaincu !\n", monstre.NOM))
+		giveMonsterLoot(p, monstre, &log)
 	} else {
 		log.WriteString("Le combat se termine sans vainqueur clair.\n")
 	}
@@ -266,8 +286,9 @@ func trainingFight(p *personnage.Character, monstre *enemies.MONSTER) {
 
 		if p.Spd >= monstre.Spd {
 			characterTurn(p, monstre)
-			if enemies.IsMonsterDead(monstre) {
+			if enemies.IsMonsterDead(monstre) && !isDead(p) {
 				fmt.Println(monstre.NOM, "est vaincu !")
+				giveMonsterLoot(p, monstre, nil)
 				break
 			}
 
@@ -285,8 +306,9 @@ func trainingFight(p *personnage.Character, monstre *enemies.MONSTER) {
 			}
 
 			characterTurn(p, monstre)
-			if enemies.IsMonsterDead(monstre) {
+			if enemies.IsMonsterDead(monstre) && !isDead(p) {
 				fmt.Println(monstre.NOM, "est vaincu !")
+				giveMonsterLoot(p, monstre, nil)
 				break
 			}
 		}

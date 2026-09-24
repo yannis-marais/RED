@@ -166,6 +166,10 @@ func AccessInventory(p personnage.Character) string {
 	ecrireSection(&sb, p.Inventory.Consumables)
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
+	fmt.Fprintf(&sb, "│ %-38s │\n", "Matériaux")
+	ecrireSection(&sb, p.Inventory.Materials)
+
+	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Livre de Sort")
 	ecrireSection(&sb, p.Inventory.SkillBooks)
 

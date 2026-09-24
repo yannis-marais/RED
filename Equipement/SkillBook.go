@@ -55,9 +55,6 @@ func LearnSkill(p personnage.Character, book SkillBook) {
 		return
 	}
 
-	// Apprendre
-	// p.Skills[book.Skill.Name] = personnage.Skills(book.Skill)
-
 	// Détruire le livre
 	p.Inventory.SkillBooks[book.Name] = qty - 1
 

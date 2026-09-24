@@ -51,6 +51,28 @@ func AddItem(p personnage.Character, item Item) {
 	fmt.Println("Impossible : stack maximum atteint pour", item.Name)
 }
 
+func AddMaterial(p *personnage.Character, name string) bool {
+	if p == nil {
+		return false
+	}
+
+	material, ok := Materials[name]
+	if !ok {
+		return false
+	}
+	if p.Inventory.Materials == nil {
+		p.Inventory.Materials = make(map[string]int)
+	}
+
+	current := p.Inventory.Materials[name]
+	if current >= material.MaxStack {
+		return false
+	}
+
+	p.Inventory.Materials[name] = current + 1
+	return true
+}
+
 var Items = map[string]Item{
 	//T1 Ronin
 	"Bandit_Helmet": {Name: "Bandit Helmet", BonusDef: 10, BonusPV: 15, MaxStack: 1, Type: "Helmet"},
@@ -115,7 +137,6 @@ var Materials = map[string]Material{
 	"Cristal": {Name: "Cristal", MaxStack: 64},
 	"Diamant": {Name: "Diamant", MaxStack: 64},
 }
-
 
 var ConsumablesRegistry = map[string]Consumable{
 	HealingPotion.Name:   HealingPotion,
