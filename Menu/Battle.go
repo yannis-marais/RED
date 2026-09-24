@@ -14,7 +14,13 @@ import (
 )
 
 func isDead(p *personnage.Character) bool {
-	return p == nil || p.PV <= 0
+	if p == nil || p.PV > 0 {
+		return false
+	}
+
+	p.PV = p.PVMax / 2
+	fmt.Printf("%s tombe au combat... mais se relève avec %d/%d PV !\n", p.Nom, p.PV, p.PVMax)
+	return true
 }
 
 func GiveMonsterLoot(p *personnage.Character, monstre *enemies.MONSTER) []string {
@@ -306,10 +312,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			fmt.Printf("%s (plus rapide) te frappe pour %d dégâts.\n", monster.NOM, monsterDamage)
 			fmt.Printf("%s : PV %d/%d\n", player.Nom, player.PV, player.PVMax)
 
-			if player.PV <= 0 {
-				fmt.Println("Tu as perdu le combat.")
-				return false
-			}
+			isDead(player)
 		}
 
 		fmt.Print(renderCombatMenu(*player, monster.NOM, monster.PV, monster.PVMax, monster.PVR, monster.PVMAXR))
@@ -374,10 +377,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			fmt.Printf("%s : PV %d/%d\n", player.Nom, player.PV, player.PVMax)
 		}
 
-		if player.PV <= 0 {
-			fmt.Println("Tu as perdu le combat.")
-			return false
-		}
+		isDead(player)
 	}
 
 	if player.PV <= 0 {
