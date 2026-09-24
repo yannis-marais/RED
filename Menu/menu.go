@@ -1,7 +1,7 @@
 package ProjetRED
 
 import (
-	//City "ProjetRED/deplacementville"
+	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
@@ -91,7 +91,7 @@ func MainMenu(p *personnage.Character) {
 
 		switch choice {
 		case 1:
-			//City.Ville1(p)
+			City.Ville1(p)
 		case 2:
 			DisplayInfo(*p)
 			WaitForReturn()
@@ -99,7 +99,6 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.MarchandForPlayer(p, func() {})
 			Marchand.Marchand(p, func() {})
 		case 5:
 			Forgeron(p)
