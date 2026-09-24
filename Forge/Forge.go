@@ -22,23 +22,23 @@ var ForgeRecipes = map[string]Recipe{
 		},
 	},
 	"Maximilian Boots": {
-		Result: Equipement.Items["Maximilian Boots"],
+		Result: Equipement.Items["Maximilian_Boots"],
 		Cost: map[string]int{
-			"Iron":    10,
+			"Fer":     10,
 			"Diamant": 5,
-			"Leather": 20,
+			"Cuir":    20,
 		},
 	},
 	"Maximilian Armor": {
-		Result: Equipement.Items["Maximilian Armor"],
+		Result: Equipement.Items["Maximilian_Armor"],
 		Cost: map[string]int{
-			"Iron":    20,
-			"Crystal": 15,
+			"Fer":     20,
+			"Cristal": 15,
 			"Diamant": 5,
 		},
 	},
 	"Maximilian Helmet": {
-		Result: Equipement.Items["Maximilian Helmet"],
+		Result: Equipement.Items["Maximilian_Helmet"],
 		Cost: map[string]int{
 			"Diamant": 5,
 			"Cuir":    5,
