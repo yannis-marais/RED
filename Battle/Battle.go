@@ -14,6 +14,7 @@ import (
 	personnage "ProjetRED/Personnage"
 	enemies "ProjetRED/enemies"
 )
+
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
 }
@@ -292,7 +293,27 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 		return false
 	}
 
-	for player.PV > 0 && (monster.PV > 0 || monster.PVR > 0) {
+	for player.PV > 0 && !enemies.IsMonsterDead(monster) {
+
+		// Si le monstre est plus rapide, il attaque avant que tu n'agisses
+		if monster.Spd > player.Spd {
+			monsterDamage := monster.Strength
+			if monsterDamage < 0 {
+				monsterDamage = 0
+			}
+			player.PV -= monsterDamage
+			if player.PV < 0 {
+				player.PV = 0
+			}
+			fmt.Printf("%s (plus rapide) te frappe pour %d dégâts.\n", monster.NOM, monsterDamage)
+			fmt.Printf("%s : PV %d/%d\n", player.Nom, player.PV, player.PVMax)
+
+			if player.PV <= 0 {
+				fmt.Println("Tu as perdu le combat.")
+				return false
+			}
+		}
+
 		fmt.Print(renderCombatMenu(*player, monster.NOM, monster.PV, monster.PVMax, monster.PVR, monster.PVMAXR))
 
 		choice, ok := Menu.ReadChoice("Votre choix : ")
@@ -328,7 +349,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			continue
 		}
 
-		if monster.PV <= 0 && monster.PVR <= 0 {
+		if enemies.IsMonsterDead(monster) {
 			fmt.Println("Victoire ! Le monstre est vaincu.")
 			for _, materialName := range GiveMonsterLoot(player, monster) {
 				fmt.Println("Drop récupéré :", materialName)
@@ -336,12 +357,8 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			return true
 		}
 
-		if player.PV <= 0 {
-			fmt.Println("Tu as perdu le combat.")
-			return false
-		}
-
-		if choice != 5 && choice != 6 && choice != 0 {
+		// Le monstre attaque après toi seulement s'il n'a pas déjà joué ce tour
+		if monster.Spd <= player.Spd && choice != 5 && choice != 6 && choice != 0 {
 			monsterDamage := monster.Strength
 			if monsterDamage < 0 {
 				monsterDamage = 0
@@ -352,6 +369,11 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			}
 			fmt.Printf("%s te frappe pour %d dégâts.\n", monster.NOM, monsterDamage)
 			fmt.Printf("%s : PV %d/%d\n", player.Nom, player.PV, player.PVMax)
+		}
+
+		if player.PV <= 0 {
+			fmt.Println("Tu as perdu le combat.")
+			return false
 		}
 	}
 

@@ -103,7 +103,7 @@ func MainMenu(p *personnage.Character) {
 		case 5:
 			Forgeron(p)
 		case 6:
-			if err := SaveCurre			Marchand.Marchand(func() {})
+			Marchand.Marchand(p, func() {})
 		case 5:
 			Forgeron(p)
 		case 6:
@@ -227,7 +227,12 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Consommables")
 	ecrireSection(&sb, p.Inventory.Consumables)
- ecrireSection affiche une map triée par clé, avec un message si elle est vide.
+
+	fmt.Fprintf(&sb, "╰%s╯\n", ligne)
+	return sb.String()
+}
+
+// ecrireSection affiche une map triée par clé, avec un message si elle est vide.
 func ecrireSection(sb *strings.Builder, items map[string]int) {
 	if len(items) == 0 {
 		fmt.Fprintf(sb, "│   %-36s │\n", "Aucun")
