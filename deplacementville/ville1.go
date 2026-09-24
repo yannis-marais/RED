@@ -1,50 +1,59 @@
 package ProjetRED
 
 import (
-	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
+	Menu "ProjetRED/menu"
 	"fmt"
 	"time"
 )
+
+var QuestJack int
 
 func Ville1(p *personnage.Character) {
 
 	var saisie string
 	for {
 		fmt.Println("==== Forteresse du royaume ====")
-		fmt.Println("j: Aller parler à Jack (il est attentif, comme s’il attendait ta venue).")
-		fmt.Println("e: Partire explorer la ville")
-		fmt.Println("m: pour ouvrire le menu")
+		fmt.Println("j: Aller parler à Jack (il est attentif, comme s'il attendait ta venue).")
+		fmt.Println("e: Partir explorer la ville")
+		fmt.Println("m: pour ouvrir le menu")
+		fmt.Println("0: pour quitter")
 		fmt.Scanln(&saisie)
 		if saisie == "m" {
 			Menu.MainMenu(p)
 		}
 		if saisie == "j" {
-			break
+			jack()
 		}
 		if saisie == "e" {
 			observation(p)
+			return
 		}
-		fmt.Println("erreur, veuillez entrer une lettre f, j ou m pour le menu")
+		if saisie == "0" {
+			return
+		}
+		fmt.Println("Erreur, veuillez entrer une lettre e, j ou m pour le menu")
+		Menu.WaitForReturn()
 	}
 
 }
-func jack(p *personnage.Character) {
-
+func jack() {
+	fmt.Println("Vous avez parlé à Jack, il vous expliqua que deux princes étaient présents, un héritier et un déchu, les deux groupes cherchant")
+	QuestJack = 1
 }
 
 func observation(p *personnage.Character) {
 	fmt.Printf("En faisant le tour de la forteresse, %s remarquera que deux maisons se démarquent l'une de l'autre. Les deux semblent appartenir à la royauté, sauf que la seconde est dénuée d'entretien.\n", p.Nom)
 	time.Sleep(1000 * time.Millisecond)
-	fmt.Printf("Cependant a chaque portail une fil de personne etait presente mais beaucoup elever du coté de la maison mal entretenu ")
+	fmt.Printf("Cependant, à chaque portail, une file de personnes était présente, mais beaucoup plus élevée du côté de la maison mal entretenue ")
 	time.Sleep(800 * time.Millisecond)
 	fmt.Println("=== choix ===")
 	time.Sleep(100 * time.Millisecond)
 	fmt.Println("1: Se diriger vers la belle maison ")
 	time.Sleep(100 * time.Millisecond)
-	fmt.Println("2: Se dirigier vers l'autrre maison")
+	fmt.Println("2: Se diriger vers l'autre maison")
 	time.Sleep(100 * time.Millisecond)
-	fmt.Println("0: Retourné a la place centrale")
+	fmt.Println("0: Retourner à la place centrale")
 
 	choice, reponse := Menu.ReadChoice("Votre choix : ")
 	if !reponse {
@@ -52,23 +61,27 @@ func observation(p *personnage.Character) {
 	}
 	switch choice {
 	case 1:
-		//MaisonPrince
+		MaisonPrince(p)
 	case 2:
-		//MaisonPrinceDechue
+		MaisonPrinceDechue(p)
 	case 0:
-		return
+		Ville1(p)
 	}
-
 }
 
-// choice, reponse := ReadChoice("Votre choix : ")
-// if !reponse {
-// 	fmt.Println("Choix invalide !")
-// 	continue
-// }
-// switch choice {
-// case 1:
-// 	City.Ville1(p)
-// case 2:
-
-// %s designe du caractere quand
+func MaisonPrince(p *personnage.Character) {
+	if QuestJack == 1 {
+		fmt.Printf("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince héritier")
+	} else {
+		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service de l'héritier")
+	}
+	VilleH(p)
+}
+func MaisonPrinceDechue(p *personnage.Character) {
+	if QuestJack == 1 {
+		fmt.Printf("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince déchu")
+	} else {
+		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service du déchu")
+	}
+	VilleD(p)
+}
