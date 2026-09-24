@@ -14,7 +14,6 @@ import (
 	personnage "ProjetRED/Personnage"
 	enemies "ProjetRED/enemies"
 )
-
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
 }
@@ -283,40 +282,19 @@ func MakeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
 	makeAWish(p, monstre)
 }
 
-func RunTerminalCombatDemo() {
-	p := personnage.CharacterCreation("Hero", personnage.Classes["Ronin"])
-	p.PV = 100
-	p.PVMax = 100
-	p.Strength = 20
-	p.Reiki = 25
-	p.Cooldowns = map[string]int{}
-	p.Skills = map[string]personnage.Skill{
-		"Fireball": {Name: "Fireball", Damage: 30, Type: "Magic"},
-		"Slash":    {Name: "Slash", Damage: 15, Type: "Nature"},
+func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
+	if player == nil || monster == nil {
+		fmt.Println("Combat impossible : personnage ou monstre invalide.")
+		return false
+	}
+	if player.PV <= 0 || monster.PV <= 0 {
+		fmt.Println("Combat impossible : un combattant est déjà hors jeu.")
+		return false
 	}
 
-	monstre := enemies.MONSTER{
-		NOM:      "Gobelin",
-		PVMax:    200,
-		PV:       200,
-		PVMAXR:   120,
-		PVR:      120,
-		Strength: 12,
-		Spd:      10,
-	}
+	for player.PV > 0 && (monster.PV > 0 || monster.PVR > 0) {
+		fmt.Print(renderCombatMenu(*player, monster.NOM, monster.PV, monster.PVMax, monster.PVR, monster.PVMAXR))
 
-	fmt.Println("=== MODE TEST COMBAT TERMINAL ===")
-	fmt.Println("Tu affrontes un Gobelin. Tu peux jouer le combat toi-même.")
-	fmt.Println("1. Attaque physique")
-	fmt.Println("2. Attaque spirituelle")
-	fmt.Println("3. Skills")
-	fmt.Println("4. Make a Wish")
-	fmt.Println("5. Inventaire")
-	fmt.Println("6. Défendre")
-	fmt.Println("0. Fuir")
-
-	for p.PV > 0 && (monstre.PV > 0 || monstre.PVR > 0) {
-		fmt.Print(renderCombatMenu(p, monstre.NOM, monstre.PV, monstre.PVMax, monstre.PVR, monstre.PVMAXR))
 		choice, ok := Menu.ReadChoice("Votre choix : ")
 		if !ok {
 			fmt.Println("Choix invalide.")
@@ -325,119 +303,65 @@ func RunTerminalCombatDemo() {
 
 		switch choice {
 		case 1:
-			multiplier, _ := PerformQTE()
-			ApplyAttackDamage(&p, &monstre, p.Strength, "PV", multiplier)
+			multiplier, _ := performQTE()
+			ApplyAttackDamage(player, monster, player.Strength, "PV", multiplier)
 		case 2:
-			multiplier, _ := PerformQTE()
-			ApplyAttackDamage(&p, &monstre, p.Reiki, "PVR", multiplier)
+			multiplier, _ := performQTE()
+			ApplyAttackDamage(player, monster, player.Reiki, "PVR", multiplier)
 		case 3:
-			if !UsePlayerSkill(&p, &monstre) {
+			if !UsePlayerSkill(player, monster) {
 				continue
 			}
 		case 4:
-			MakeAWish(&p, &monstre)
+			MakeAWish(player, monster)
 		case 5:
-			Menu.ManageInventory(&p)
+			Menu.ManageInventory(player)
 			Menu.WaitForReturn()
 			continue
 		case 6:
-			fmt.Println("Tu prends une défense et attends le prochain coup.")
+			fmt.Println("Tu prends une position défensive et attends le prochain coup.")
 		case 0:
 			fmt.Println("Tu fuis le combat.")
-			return
+			return false
 		default:
 			fmt.Println("Choix invalide.")
 			continue
 		}
 
-		if monstre.PV <= 0 && monstre.PVR <= 0 {
-			fmt.Println("Victoire ! Le Gobelin est vaincu.")
-			for _, materialName := range GiveMonsterLoot(&p, &monstre) {
+		if monster.PV <= 0 && monster.PVR <= 0 {
+			fmt.Println("Victoire ! Le monstre est vaincu.")
+			for _, materialName := range GiveMonsterLoot(player, monster) {
 				fmt.Println("Drop récupéré :", materialName)
 			}
-			return
+			return true
 		}
 
-		if p.PV <= 0 {
+		if player.PV <= 0 {
 			fmt.Println("Tu as perdu le combat.")
-			return
+			return false
 		}
 
 		if choice != 5 && choice != 6 && choice != 0 {
-			monstreDamage := monstre.Strength
-			p.PV -= monstreDamage
-			if p.PV < 0 {
-				p.PV = 0
+			monsterDamage := monster.Strength
+			if monsterDamage < 0 {
+				monsterDamage = 0
 			}
-			fmt.Printf("%s te frappe pour %d dégâts.\n", monstre.NOM, monstreDamage)
-			fmt.Printf("%s : PV %d/%d\n", p.Nom, p.PV, p.PVMax)
+			player.PV -= monsterDamage
+			if player.PV < 0 {
+				player.PV = 0
+			}
+			fmt.Printf("%s te frappe pour %d dégâts.\n", monster.NOM, monsterDamage)
+			fmt.Printf("%s : PV %d/%d\n", player.Nom, player.PV, player.PVMax)
 		}
 	}
 
-	if p.PV <= 0 {
+	if player.PV <= 0 {
 		fmt.Println("Tu es mort au combat.")
-		return
+		return false
 	}
 
 	fmt.Println("Combat terminé.")
-}
-
-func characterTurn(p *personnage.Character, monstre *enemies.MONSTER) {
-	if p == nil || monstre == nil {
-		fmt.Println("Combat impossible : personnage ou monstre invalide.")
-		return
-	}
-
-	for {
-		fmt.Print(renderCombatMenu(*p, monstre.NOM, monstre.PV, monstre.PVMax, monstre.PVR, monstre.PVMAXR))
-		choice, ok := Menu.ReadChoice("Votre choix : ")
-		if !ok {
-			fmt.Println("Choix invalide.")
-			continue
-		}
-
-		switch choice {
-		case 1:
-			multiplier, _ := performQTE()
-			fmt.Println("\nVous utilisez Attaque basique.")
-			applyAttackDamage(p, monstre, p.Strength, "PV", multiplier)
-			return
-
-		case 2:
-			multiplier, _ := performQTE()
-			fmt.Println("\nVous utilisez Attaque spéciale (Reiki).")
-			applyAttackDamage(p, monstre, p.Reiki, "PVR", multiplier)
-			return
-
-		case 3:
-			if usePlayerSkill(p, monstre) {
-				return
-			}
-			continue
-
-		case 4:
-			makeAWish(p, monstre)
-			return
-
-		case 5:
-			Menu.ManageInventory(p)
-			Menu.WaitForReturn()
-			continue
-
-		case 6:
-			fmt.Println("\nVous prenez une position défensive. Vous attendez le prochain coup.")
-			return
-
-		case 0:
-			fmt.Println("\nVous abandonnez le combat et reculez.")
-			monstre.PV = 0
-			monstre.PVR = 0
-			return
-
-		default:
-			fmt.Println("Choix invalide.")
-		}
-	}
+	return true
 }
 
 func makeAWish(p *personnage.Character, monstre *enemies.MONSTER) {

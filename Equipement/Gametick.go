@@ -1,26 +1,11 @@
 package ProjetRED
 
-import (
-	personnage "ProjetRED/Personnage"
-	enemies "ProjetRED/enemies"
-	"time"
-)
+import personnage "ProjetRED/Personnage"
 
 func GameTick(p *personnage.Character) {
+	if p == nil {
+		return
+	}
 	p.UpdateEffects()
 	p.UpdateCooldowns()
-}
-
-func StartCombat(player *personnage.Character, monster *enemies.MONSTER) {
-
-	for {
-		time.Sleep(time.Second)
-
-		GameTick(player)
-
-		// Si un des deux est mort, on arrête
-		if player.PV <= 0 || monster.PV <= 0 {
-			break
-		}
-	}
 }
