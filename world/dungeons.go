@@ -16,11 +16,7 @@ var DungeonsByCity = map[string]DungeonDefinition{
 	},
 	"Ville 2": {
 		Name:     "Grotte",
-		Monsters: []string{"orc", "troll", "loup-garou"},
-	},
-	"Ville 3": {
-		Name:     "Manoir",
-		Monsters: []string{"vouivre", "zombie", "loup-garou"},
+		Monsters: []string{"orc", "troll", "loup-garou", "vouivre", "zombie", "loup-garou"},
 	},
 	"Ville 4": {
 		Name:     "Plaine",
