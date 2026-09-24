@@ -1,7 +1,7 @@
 package ProjetRED
 
 import (
-	//City "ProjetRED/deplacementville"
+	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
@@ -91,7 +91,7 @@ func MainMenu(p *personnage.Character) {
 
 		switch choice {
 		case 1:
-			//City.Ville1(p)
+			City.Ville1(p)
 		case 2:
 			DisplayInfo(*p)
 			WaitForReturn()
@@ -218,6 +218,7 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
 	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
+	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("Capacité : %d/%d", p.Inventory.UsedSlots(), p.Inventory.Capacity))
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Objets")

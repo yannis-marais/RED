@@ -45,6 +45,10 @@ func AddItem(p *personnage.Character, item Item) {
 	}
 
 	current := p.Inventory.Items[item.Name]
+	if current == 0 && !p.Inventory.HasFreeSlot(item.Name) {
+		fmt.Println("Inventaire plein pour", item.Name)
+		return
+	}
 	if current < item.MaxStack {
 		p.Inventory.Items[item.Name] = current + 1
 		fmt.Println(item.Name, "ajouté ! Quantité :", current+1)
@@ -68,6 +72,9 @@ func AddMaterial(p *personnage.Character, name string) bool {
 	}
 
 	current := p.Inventory.Materials[name]
+	if current == 0 && !p.Inventory.HasFreeSlot(name) {
+		return false
+	}
 	if current >= material.MaxStack {
 		return false
 	}

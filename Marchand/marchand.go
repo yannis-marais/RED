@@ -1,6 +1,7 @@
 package ProjetRED
 
 import (
+	Equipement "ProjetRED/Equipement"
 	personnage "ProjetRED/Personnage"
 	"fmt"
 	"math/rand"
@@ -65,10 +66,15 @@ var prix = map[string]int{
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
 
-var pieces = 100
 var inventaire = map[string]int{}
 
-func Marchand(retour func()) {
+// Marchand affiche le menu unique du marchand : achat d'objets tirés au
+// hasard dans le catalogue, amélioration de l'inventaire et vente d'objets.
+func Marchand(p *personnage.Character, retour func()) {
+	if p == nil {
+		return
+	}
+
 	n := 4
 	if n > len(achatCatalogue) {
 		n = len(achatCatalogue)
@@ -82,22 +88,33 @@ func Marchand(retour func()) {
 
 	for {
 		fmt.Println("\n--- Marchand ---")
-		fmt.Println("Tu as", pieces, "pièces")
+		fmt.Println("Tu as", p.Purse, "pièces")
 		for i, nom := range tirage {
 			fmt.Printf("%d - %s : %d pièces\n", i+1, nom, prix[nom])
 		}
-		fmt.Println("Tape 'v' pour vendre un objet de ton inventaire")
-		fmt.Println("Tape 'q' pour quitter le marchand")
+		fmt.Printf("u - Upgrade inventaire : +%d emplacements pour %d pièces\n", inventoryUpgradeSize, InventoryUpgradeCost(p))
+		fmt.Println("v - Vendre un objet de ton inventaire")
+		fmt.Println("q - Quitter le marchand")
 
 		var saisie string
 		fmt.Scanln(&saisie)
 
-		if saisie == "q" {
-			retour()
+		switch saisie {
+		case "q":
+			if retour != nil {
+				retour()
+			}
 			return
-		}
-		if saisie == "v" {
-			vendre()
+		case "v":
+			vendre(p)
+			continue
+		case "u":
+			cost := InventoryUpgradeCost(p)
+			if UpgradeInventory(p) {
+				fmt.Printf("Inventaire agrandi à %d emplacements pour %d pièces.\n", p.Inventory.Capacity, cost)
+			} else {
+				fmt.Println("Tu n'as pas assez de pièces.")
+			}
 			continue
 		}
 
@@ -109,18 +126,31 @@ func Marchand(retour func()) {
 
 		nomChoisi := tirage[choix-1]
 		prixAchat := prix[nomChoisi]
-		if pieces < prixAchat {
+		if p.Purse < uint(prixAchat) {
 			fmt.Println("tu n'as pas assez de pièces")
 			continue
 		}
 
-		pieces -= prixAchat
+		item, ok := Equipement.Items[nomChoisi]
+		if !ok {
+			fmt.Println("objet indisponible")
+			continue
+		}
+
+		before := p.Inventory.Items[item.Name]
+		Equipement.AddItem(p, item)
+		if p.Inventory.Items[item.Name] <= before {
+			fmt.Println("impossible d'ajouter l'objet à l'inventaire (inventaire plein ?)")
+			continue
+		}
+
+		p.Purse -= uint(prixAchat)
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
 	}
 }
 
-func vendre() {
+func vendre(p *personnage.Character) {
 	if len(inventaire) == 0 {
 		fmt.Println("tu n'as rien à vendre")
 		return
@@ -149,7 +179,7 @@ func vendre() {
 	nom := noms[choix-1]
 	prixDeVente := prix[nom] / 2
 
-	pieces += prixDeVente
+	p.Purse += uint(prixDeVente)
 	inventaire[nom]--
 	fmt.Printf("tu as vendu %s pour %d pièces\n", nom, prixDeVente)
 

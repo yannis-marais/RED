@@ -11,6 +11,10 @@ func AddConsumable(p *personnage.Character, item Consumable) {
 	}
 
 	current := p.Inventory.Consumables[item.Name]
+	if current == 0 && !p.Inventory.HasFreeSlot(item.Name) {
+		fmt.Println("Inventaire plein pour", item.Name)
+		return
+	}
 	if current < item.MaxStack {
 		p.Inventory.Consumables[item.Name] = current + 1
 		fmt.Println(item.Name, "ajoutée ! Quantité :", current+1)
