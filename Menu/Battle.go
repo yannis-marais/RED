@@ -8,12 +8,11 @@ import (
 	"sort"
 	"strings"
 	"time"
-
 	Equipement "ProjetRED/Equipement"
-	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
 	enemies "ProjetRED/enemies"
 )
+
 
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
@@ -88,11 +87,11 @@ func renderCombatMenu(p personnage.Character, enemyName string, enemyHP, enemyMa
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "\n╭%s╮\n", line)
 	for _, l := range lines[:1] {
-		fmt.Fprintf(&sb, "│ %-48s │\n", padCombatLine(l, 48))
+		fmt.Fprintf(&sb, "│ %-s │\n", padCombatLine(l, 48))
 	}
 	fmt.Fprintf(&sb, "├%s┤\n", line)
 	for _, l := range lines[1:] {
-		fmt.Fprintf(&sb, "│ %-48s │\n", padCombatLine(l, 48))
+		fmt.Fprintf(&sb, "│ %-50s │\n", padCombatLine(l, 48))
 	}
 	fmt.Fprintf(&sb, "╰%s╯\n", line)
 	return sb.String()
@@ -254,7 +253,7 @@ func usePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
 		fmt.Printf("%d. %s (%s) - CD:%d\n", i+1, name, skill.Type, cooldown)
 	}
 
-	choice, ok := Menu.ReadChoice("Choisissez un skill : ")
+	choice, ok := ReadChoice("Choisissez un skill : ")
 	if !ok || choice < 1 || choice > len(names) {
 		fmt.Println("Choix de skill invalide.")
 		return false
@@ -316,7 +315,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 
 		fmt.Print(renderCombatMenu(*player, monster.NOM, monster.PV, monster.PVMax, monster.PVR, monster.PVMAXR))
 
-		choice, ok := Menu.ReadChoice("Votre choix : ")
+		choice, ok := ReadChoice("Votre choix : ")
 		if !ok {
 			fmt.Println("Choix invalide.")
 			continue
@@ -336,8 +335,8 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 		case 4:
 			MakeAWish(player, monster)
 		case 5:
-			Menu.ManageInventory(player)
-			Menu.WaitForReturn()
+			ManageInventory(player)
+			WaitForReturn()
 			continue
 		case 6:
 			fmt.Println("Tu prends une position défensive et attends le prochain coup.")

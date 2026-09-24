@@ -1,5 +1,6 @@
 package world
 
+import "math/rand"
 // DungeonDefinition représente un donjon associé à une ville.
 type DungeonDefinition struct {
 	Name     string
@@ -38,4 +39,12 @@ func GetMonsterNamesForCity(cityName string) []string {
 		return nil
 	}
 	return append([]string(nil), dungeon.Monsters...)
+}
+
+func Aleatoire(ville string) string {
+    mons := GetMonsterNamesForCity(ville)
+    if len(mons) == 0 {
+        return ""
+    }
+    return mons[rand.Intn(len(mons))]
 }
