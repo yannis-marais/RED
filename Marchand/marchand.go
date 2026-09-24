@@ -8,6 +8,37 @@ import (
 	"strconv"
 )
 
+const inventoryUpgradeSize = 5
+
+func InventoryUpgradeCost(p *personnage.Character) uint {
+	if p == nil {
+		return 0
+	}
+	level := (p.Inventory.Capacity - personnage.DefaultInventoryCapacity) / inventoryUpgradeSize
+	if level < 0 {
+		level = 0
+	}
+	return uint(50 + level*50)
+}
+
+func UpgradeInventory(p *personnage.Character) bool {
+	if p == nil {
+		return false
+	}
+	if p.Inventory.Capacity <= 0 {
+		p.Inventory.Capacity = personnage.DefaultInventoryCapacity
+	}
+
+	cost := InventoryUpgradeCost(p)
+	if p.Purse < cost {
+		return false
+	}
+
+	p.Purse -= cost
+	p.Inventory.Capacity += inventoryUpgradeSize
+	return true
+}
+
 var achatCatalogue = []string{
 	"Swordshield", "Elementalist_Rings",
 	"Bandit_Helmet", "Bandit_Armor", "Bandit_Boots", "Bandit_Spear",
@@ -41,8 +72,8 @@ var prix = map[string]int{
 	"Leather_Patch":     10,
 	"Boots":             10,
 	"Fork":              5,
-	"Healing_Potion":    60,
-	"Poison_DOT_Potion": 60,
+	"Healing_Potion":    20,
+	"Poison_DOT_Potion": 30,
 	"Pain":              15,
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
@@ -104,6 +135,49 @@ func Marchand(p *personnage.Character, retour func()) {
 	}
 }
 
+func MarchandForPlayer(p *personnage.Character, retour func()) {
+	if p == nil {
+		return
+	}
+
+	for {
+		fmt.Println("\n--- Marchand ---")
+		fmt.Println("Tu as", p.Purse, "pièces")
+		fmt.Printf("u - Upgrade inventaire : +%d emplacements pour %d pièces\n", inventoryUpgradeSize, InventoryUpgradeCost(p))
+		fmt.Println("q - Quitter")
+
+		var saisie string
+		fmt.Scanln(&saisie)
+		switch saisie {
+		case "q":
+			if retour != nil {
+				retour()
+			}
+			return
+		case "u":
+			cost := InventoryUpgradeCost(p)
+			if UpgradeInventory(p) {
+				fmt.Printf("Inventaire agrandi à %d emplacements pour %d pièces.\n", p.Inventory.Capacity, cost)
+			} else {
+				fmt.Println("Tu n'as pas assez de pièces.")
+			}
+		default:
+			if item, ok := Equipement.Items[saisie]; ok {
+				if p.Purse < uint(prix[saisie]) {
+					fmt.Println("Tu n'as pas assez de pièces.")
+					continue
+				}
+				before := p.Inventory.Items[item.Name]
+				Equipement.AddItem(p, item)
+				if p.Inventory.Items[item.Name] > before {
+					p.Purse -= uint(prix[saisie])
+				}
+			}
+		}
+	}
+}
+
+func vendre() {
 func vendre(p *personnage.Character) {
 	if len(inventaire) == 0 {
 		fmt.Println("tu n'as rien à vendre")

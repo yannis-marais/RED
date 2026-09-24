@@ -78,6 +78,7 @@ func CharacterCreation(nom string, classe Classe) Character {
 			Consumables: make(map[string]int),
 			Materials:   make(map[string]int),
 			SkillBooks:  make(map[string]int),
+			Capacity:    DefaultInventoryCapacity,
 		},
 		Effects:   []StatusEffect{},
 		Cooldowns: make(map[string]int),
@@ -90,4 +91,41 @@ type Inventory struct {
 	Consumables map[string]int
 	Materials   map[string]int
 	SkillBooks  map[string]int
+	Capacity    int
+}
+
+const DefaultInventoryCapacity = 20
+
+func (inventory Inventory) UsedSlots() int {
+	used := 0
+	for _, items := range []map[string]int{
+		inventory.Items,
+		inventory.Consumables,
+		inventory.Materials,
+		inventory.SkillBooks,
+	} {
+		for _, quantity := range items {
+			if quantity > 0 {
+				used++
+			}
+		}
+	}
+	return used
+}
+
+func (inventory Inventory) HasFreeSlot(itemName string) bool {
+	if inventory.Capacity <= 0 {
+		return true
+	}
+	for _, items := range []map[string]int{
+		inventory.Items,
+		inventory.Consumables,
+		inventory.Materials,
+		inventory.SkillBooks,
+	} {
+		if items[itemName] > 0 {
+			return true
+		}
+	}
+	return inventory.UsedSlots() < inventory.Capacity
 }

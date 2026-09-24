@@ -54,6 +54,9 @@ func LoadCharacterFromFile(path string) (Character, error) {
 	if character.Inventory.SkillBooks == nil {
 		character.Inventory.SkillBooks = make(map[string]int)
 	}
+	if character.Inventory.Capacity <= 0 {
+		character.Inventory.Capacity = DefaultInventoryCapacity
+	}
 	if character.Cooldowns == nil {
 		character.Cooldowns = make(map[string]int)
 	}
