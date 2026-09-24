@@ -9,7 +9,7 @@ import (
 )
 
 // DechuProgress suit l'avancée du joueur dans la maison du prince déchu.
-// 0: vient d'arriver, 1: a parlé à Renard, 2: a remporté la chasse (prêt pour la capitale)
+// 0: vient d'arriver, 1: a parlé à Renard (peut partir chasser)
 var DechuProgress int
 
 func VilleD(p *personnage.Character) {
@@ -20,9 +20,6 @@ func VilleD(p *personnage.Character) {
 		fmt.Printf("%s se trouve dans la cour désordonnée mais grouillante de vie de la maison déchue.\n", p.Nom)
 		fmt.Println("1: Parler à Renard, meneur officieux des partisans")
 		fmt.Println("2: Partir chasser la bête qui rôde près du campement")
-		if DechuProgress >= 2 {
-			fmt.Println("4: Prendre la route vers la capitale pour soulever le trône")
-		}
 		fmt.Println("3: pour ouvrir le menu")
 		fmt.Println("0: pour quitter")
 
@@ -43,14 +40,12 @@ func VilleD(p *personnage.Character) {
 		case 1:
 			renard(p)
 		case 2:
-			chasse(p)
-		case 4:
-			if DechuProgress >= 2 {
+			if chasse(p) {
+				// La quête de la maison du prince déchu est terminée :
+				// on enchaîne directement sur la capitale.
 				Ville4(p, "Dechu")
 				return
 			}
-			fmt.Println("Il te reste encore des choses à faire ici avant de partir.")
-			WaitForReturn()
 		case 0:
 			return
 		default:
@@ -72,14 +67,17 @@ func renard(p *personnage.Character) {
 	WaitForReturn()
 }
 
-func chasse(p *personnage.Character) {
+// chasse fait affronter un monstre de ville2 au joueur.
+// Elle renvoie true si la quête est validée (victoire), ce qui déclenche
+// automatiquement l'enchaînement vers Ville4.
+func chasse(p *personnage.Character) bool {
 	fmt.Printf("%s rejoint un groupe de recrues déjà prêtes, torches et bâtons en main.\n", p.Nom)
 	time.Sleep(500 * time.Millisecond)
 
 	if DechuProgress < 1 {
 		fmt.Println("Les recrues vous regardent avec méfiance. « On ne part pas avec n'importe qui. Va d'abord voir Renard. »")
 		WaitForReturn()
-		return
+		return false
 	}
 
 	fmt.Println("Le groupe s'enfonce dans les broussailles aux abords du campement, sur les traces de la bête...")
@@ -89,23 +87,23 @@ func chasse(p *personnage.Character) {
 	if !ok || monstre == nil {
 		fmt.Println("La chasse ne donne rien : la créature s'est déjà enfuie plus loin.")
 		WaitForReturn()
-		return
+		return false
 	}
 
 	fmt.Printf("Un %s surgit soudain, vous barrant la route !\n", monstre.NOM)
 
 	if StartCombat == nil {
 		fmt.Println("Le système de combat n'est pas encore connecté (la variable StartCombat n'a pas été assignée).")
-		return
+		return false
 	}
 
 	if StartCombat(p, monstre) {
-		fmt.Println("Les recrues vous acclament en rentrant au feu de camp : « Bienvenue chez les oubliés ! La route vers la capitale est à toi. »")
-		if DechuProgress < 2 {
-			DechuProgress = 2
-		}
-	} else {
-		fmt.Println("Le groupe recule en désordre, la bête toujours en liberté. Il faudra retenter l'aventure.")
+		fmt.Println("Les recrues vous acclament en rentrant au feu de camp : « Bienvenue chez les oubliés ! En route pour la capitale. »")
+		WaitForReturn()
+		return true
 	}
+
+	fmt.Println("Le groupe recule en désordre, la bête toujours en liberté. Il faudra retenter l'aventure.")
 	WaitForReturn()
+	return false
 }
