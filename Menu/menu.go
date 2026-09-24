@@ -5,8 +5,8 @@ import (
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
 	City "ProjetRED/deplacementville"
-	Battle "ProjetRED/Battle"
 	Monster "ProjetRED/enemies"
+	"ProjetRED/world"
 	"bufio"
 	"fmt"
 	"os"
@@ -85,7 +85,7 @@ func MainMenu(p *personnage.Character) {
 		fmt.Println("6. Sauvegarder")
 		fmt.Println("7. Charger la sauvegarde")
 		fmt.Println("8. Faire un combat d'entrainement")
-		fmt.Println("9. Qui sont les acteurs cachés")
+		fmt.Println("9. Qui sont les artistes cachés")
 		fmt.Println("0. Quitter")
 
 		choice, reponse := ReadChoice("Votre choix : ")
@@ -126,12 +126,12 @@ func MainMenu(p *personnage.Character) {
 			}
 			WaitForReturn()
 		case 8:
-			monstre, ok := Monster.SpawnMonster("squelette")
+			monstre, ok := Monster.SpawnMonster(world.Aleatoire("ville1"))
 			if !ok {
 				fmt.Println("Impossible de créer le monstre d'entraînement.")
 				continue
 			}
-			Battle.StartCombat(p, monstre)
+			StartCombat(p, monstre)
 		case 9:
 			fmt.Println("=== les artistes sont :===")
 			WaitForReturn()

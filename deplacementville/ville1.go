@@ -14,41 +14,44 @@ var QuestJack int
 var OpenMenu func(*personnage.Character)
 
 func Ville1(p *personnage.Character) {
-
-	var saisie string
 	for {
 		fmt.Println("==== Forteresse du royaume ====")
-		fmt.Println("j: Aller parler à Jack (il est attentif, comme s'il attendait ta venue).")
-		fmt.Println("e: Partir explorer la ville")
-		fmt.Println("m: pour ouvrir le menu")
+		fmt.Println("1: Aller parler à Jack (il est attentif, comme s'il attendait ta venue).")
+		fmt.Println("2: Partir explorer la ville")
+		fmt.Println("3: pour ouvrir le menu")
 		fmt.Println("0: pour quitter")
-		fmt.Scanln(&saisie)
-		if saisie == "m" {
+
+		choice, ok := readChoice("Votre choix : ")
+		if !ok {
+			fmt.Println("Erreur, veuillez entrer 1, 2, 3 ou 0 pour le menu")
+			WaitForReturn()
+			continue
+		}
+
+		switch choice {
+		case 3:
 			if OpenMenu != nil {
 				OpenMenu(p)
-				return
+				continue
 			}
 			fmt.Println("Le menu principal n'est pas disponible.")
-		}
-		if saisie == "j" {
+		case 1:
 			jack()
-		}
-		if saisie == "e" {
+		case 2:
 			observation(p)
 			return
-		}
-		if saisie == "0" {
+		case 0:
 			return
+		default:
+			fmt.Println("Erreur, veuillez entrer 1, 2, 3 ou 0 pour le menu")
+			WaitForReturn()
 		}
-		fmt.Println("Erreur, veuillez entrer une lettre e, j ou m pour le menu")
-		fmt.Println("Appuyez sur Entrée pour continuer...")
-		_, _ = fmt.Scanln()
 	}
-
 }
 func jack() {
-	fmt.Println("Vous avez parlé à Jack, il vous expliqua que deux princes étaient présents, un héritier et un déchu, les deux groupes cherchant")
+	fmt.Println("Vous avez parlé à Jack, il vous expliqua que deux princes étaient présents, un héritier et un déchu, les deux groupes cherchant à recruter des membre")
 	QuestJack = 1
+	WaitForReturn()
 }
 
 func readChoice(prompt string) (int, bool) {
@@ -104,18 +107,18 @@ func observation(p *personnage.Character) {
 
 func MaisonPrince(p *personnage.Character) {
 	if QuestJack == 1 {
-		fmt.Printf("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince héritier")
+		fmt.Println("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince héritier")
 	} else {
-		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service de l'héritier")
+		fmt.Println("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service de l'héritier")
 	}
 	WaitForReturn()
 	VilleH(p)
 }
 func MaisonPrinceDechue(p *personnage.Character) {
 	if QuestJack == 1 {
-		fmt.Printf("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince déchu")
+		fmt.Println("Avec les informations que vous avez eues, vous vous enrôlez dans la maison du prince déchu")
 	} else {
-		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service du déchu")
+		fmt.Println("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service du déchu")
 	}
 	WaitForReturn()
 	VilleD(p)
