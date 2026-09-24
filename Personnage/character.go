@@ -95,3 +95,45 @@ type Inventory struct {
 	Materials   map[string]int
 	SkillBooks  map[string]int
 }
+
+func (inventory Inventory) UsedSlots() uint {
+	var used uint
+	seen := make(map[string]struct{})
+
+	for _, items := range []map[string]int{
+		inventory.Items,
+		inventory.Consumables,
+		inventory.Materials,
+		inventory.SkillBooks,
+	} {
+		for name, quantity := range items {
+			if quantity > 0 {
+				seen[name] = struct{}{}
+			}
+		}
+	}
+
+	used = uint(len(seen))
+	return used
+}
+
+func (inventory Inventory) HasFreeSlot(name string) bool {
+	if inventory.hasItem(name) {
+		return true
+	}
+	return inventory.UsedSlots() < inventory.Capacity
+}
+
+func (inventory Inventory) hasItem(name string) bool {
+	for _, items := range []map[string]int{
+		inventory.Items,
+		inventory.Consumables,
+		inventory.Materials,
+		inventory.SkillBooks,
+	} {
+		if items[name] > 0 {
+			return true
+		}
+	}
+	return false
+}
