@@ -2,7 +2,11 @@ package ProjetRED
 
 import (
 	personnage "ProjetRED/Personnage"
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -47,12 +51,32 @@ func jack() {
 	QuestJack = 1
 }
 
+func readChoice(prompt string) (int, bool) {
+	fmt.Print(prompt)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	if !scanner.Scan() {
+		return 0, false
+	}
+
+	value, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+	if err != nil {
+		return 0, false
+	}
+
+	return value, true
+}
+func WaitForReturn() {
+	fmt.Println("Appuyez sur Entrée pour continuer...")
+	_, _ = fmt.Scanln()
+}
+
 func observation(p *personnage.Character) {
 	fmt.Printf("En faisant le tour de la forteresse, %s remarquera que deux maisons se démarquent l'une de l'autre. Les deux semblent appartenir à la royauté, sauf que la seconde est dénuée d'entretien.\n", p.Nom)
 	time.Sleep(1000 * time.Millisecond)
-	fmt.Printf("Cependant, à chaque portail, une file de personnes était présente, mais beaucoup plus élevée du côté de la maison mal entretenue ")
+	fmt.Println("Cependant, à chaque portail, une file de personnes était présente, mais beaucoup plus élevée du côté de la maison mal entretenue ")
 	time.Sleep(800 * time.Millisecond)
-	fmt.Println("=== choix ===")
+	fmt.Println("====== choix ======")
 	time.Sleep(100 * time.Millisecond)
 	fmt.Println("1: Se diriger vers la belle maison ")
 	time.Sleep(100 * time.Millisecond)
@@ -60,13 +84,12 @@ func observation(p *personnage.Character) {
 	time.Sleep(100 * time.Millisecond)
 	fmt.Println("0: Retourner à la place centrale")
 
-	fmt.Print("Votre choix : ")
-	var choice int
-	_, err := fmt.Scanf("%d", &choice)
-	if err != nil {
+	choice, ok := readChoice("Votre choix : ")
+	if !ok {
 		fmt.Println("Choix invalide !")
-		return
+		observation(p)
 	}
+
 	switch choice {
 	case 1:
 		MaisonPrince(p)
@@ -74,6 +97,8 @@ func observation(p *personnage.Character) {
 		MaisonPrinceDechue(p)
 	case 0:
 		Ville1(p)
+	default:
+		fmt.Println("Choix inconnu. Veuillez réessayer.")
 	}
 }
 
@@ -83,6 +108,7 @@ func MaisonPrince(p *personnage.Character) {
 	} else {
 		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service de l'héritier")
 	}
+	WaitForReturn()
 	VilleH(p)
 }
 func MaisonPrinceDechue(p *personnage.Character) {
@@ -91,5 +117,6 @@ func MaisonPrinceDechue(p *personnage.Character) {
 	} else {
 		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service du déchu")
 	}
+	WaitForReturn()
 	VilleD(p)
 }
