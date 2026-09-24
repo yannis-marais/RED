@@ -20,6 +20,7 @@ var CurrentPlayer *personnage.Character
 func SetCurrentPlayer(p *personnage.Character) {
 	CurrentPlayer = p
 	City.OpenMenu = MainMenu
+	City.StartCombat = StartCombat
 }
 
 func SaveCurrentGame() error {
