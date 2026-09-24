@@ -99,7 +99,7 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.Marchand(func() {})
+			Marchand.MarchandForPlayer(p, func() {})
 		case 5:
 			Forgeron(p)
 		case 6:
@@ -214,6 +214,7 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
 	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
+	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("Capacité : %d/%d", p.Inventory.UsedSlots(), p.Inventory.Capacity))
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Objets")

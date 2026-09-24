@@ -35,6 +35,10 @@ func GiveSkillBook(p *personnage.Character, book SkillBook) {
 	}
 
 	qty := p.Inventory.SkillBooks[book.Name]
+	if qty == 0 && !p.Inventory.HasFreeSlot(book.Name) {
+		fmt.Println("Inventaire plein pour", book.Name)
+		return
+	}
 	if qty >= book.MaxStack {
 		fmt.Println("Impossible :", p.Nom, "possède déjà", book.Name)
 		return

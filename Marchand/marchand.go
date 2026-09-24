@@ -1,10 +1,43 @@
 package ProjetRED
 
 import (
+	Equipement "ProjetRED/Equipement"
+	personnage "ProjetRED/Personnage"
 	"fmt"
 	"math/rand"
 	"strconv"
 )
+
+const inventoryUpgradeSize = 5
+
+func InventoryUpgradeCost(p *personnage.Character) uint {
+	if p == nil {
+		return 0
+	}
+	level := (p.Inventory.Capacity - personnage.DefaultInventoryCapacity) / inventoryUpgradeSize
+	if level < 0 {
+		level = 0
+	}
+	return uint(50 + level*50)
+}
+
+func UpgradeInventory(p *personnage.Character) bool {
+	if p == nil {
+		return false
+	}
+	if p.Inventory.Capacity <= 0 {
+		p.Inventory.Capacity = personnage.DefaultInventoryCapacity
+	}
+
+	cost := InventoryUpgradeCost(p)
+	if p.Purse < cost {
+		return false
+	}
+
+	p.Purse -= cost
+	p.Inventory.Capacity += inventoryUpgradeSize
+	return true
+}
 
 var achatCatalogue = []string{
 	"Swordshield", "Elementalist_Rings",
@@ -97,6 +130,48 @@ func Marchand(retour func()) {
 		pieces -= prixAchat
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
+	}
+}
+
+func MarchandForPlayer(p *personnage.Character, retour func()) {
+	if p == nil {
+		return
+	}
+
+	for {
+		fmt.Println("\n--- Marchand ---")
+		fmt.Println("Tu as", p.Purse, "pièces")
+		fmt.Printf("u - Upgrade inventaire : +%d emplacements pour %d pièces\n", inventoryUpgradeSize, InventoryUpgradeCost(p))
+		fmt.Println("q - Quitter")
+
+		var saisie string
+		fmt.Scanln(&saisie)
+		switch saisie {
+		case "q":
+			if retour != nil {
+				retour()
+			}
+			return
+		case "u":
+			cost := InventoryUpgradeCost(p)
+			if UpgradeInventory(p) {
+				fmt.Printf("Inventaire agrandi à %d emplacements pour %d pièces.\n", p.Inventory.Capacity, cost)
+			} else {
+				fmt.Println("Tu n'as pas assez de pièces.")
+			}
+		default:
+			if item, ok := Equipement.Items[saisie]; ok {
+				if p.Purse < uint(prix[saisie]) {
+					fmt.Println("Tu n'as pas assez de pièces.")
+					continue
+				}
+				before := p.Inventory.Items[item.Name]
+				Equipement.AddItem(p, item)
+				if p.Inventory.Items[item.Name] > before {
+					p.Purse -= uint(prix[saisie])
+				}
+			}
+		}
 	}
 }
 
