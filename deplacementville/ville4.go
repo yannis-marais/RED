@@ -2,6 +2,8 @@ package ProjetRED
 
 import (
 	Marchand "ProjetRED/Marchand"
+	personnage "ProjetRED/Personnage"
+
 	//Menu "ProjetRED/Menu"
 	"fmt"
 )
@@ -15,13 +17,13 @@ func Ville4(p *personnage.Character) {
 		}
 
 		const j = "j"
-		const p = "p"
+		const plaine = "p"
 		const a = "a"
 
 		transportdansvillequatre := map[string]func(){
-			j: Jack4,
-			p: Plaine,
-			a: func() { Marchand.Marchand(Ville4) },
+			j:      Jack4,
+			plaine: Plaine,
+			a:      func() { Marchand.Marchand(p) },
 		}
 		var saisie string
 
@@ -37,7 +39,7 @@ func Ville4(p *personnage.Character) {
 			if saisie == "m" {
 				//Menu.MainMenu()
 			}
-			if saisie == j || saisie == p {
+			if saisie == j || saisie == plaine {
 				break
 			}
 			if saisie == a {

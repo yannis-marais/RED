@@ -3,6 +3,7 @@ package ProjetRED
 import (
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
+
 	//Menu "ProjetRED/Menu"
 	"fmt"
 )
@@ -37,7 +38,11 @@ func VilleD(p *personnage.Character) {
 			fmt.Scanln(&saisie)
 
 			if saisie == "m" {
-				//Menu.MainMenu()
+				if OpenMenu != nil {
+					OpenMenu(p)
+					return
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
 			}
 			if saisie == j || saisie == d || saisie == a {
 				break

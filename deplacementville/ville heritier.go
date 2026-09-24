@@ -38,7 +38,11 @@ func VilleH(p *personnage.Character) {
 			fmt.Scanln(&saisie)
 
 			if saisie == "m" {
-				//Menu.MainMenu()
+				if OpenMenu != nil {
+					OpenMenu(p)
+					return
+				}
+				fmt.Println("Le menu principal n'est pas disponible.")
 			}
 			if saisie == j || saisie == g || saisie == a {
 				break

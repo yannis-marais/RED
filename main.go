@@ -1,10 +1,9 @@
 package main
 
 import (
-	Equipement "ProjetRED/Equipement"
+	 Equipement "ProjetRED/Equipement"
 	//battle "ProjetRED/Battle"
-	//Menu "ProjetRED/Menu"
-	Marchand "ProjetRED/Marchand"
+	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
 )
 
@@ -16,15 +15,14 @@ func main() {
 	Equipement.AddItem(&jean, Equipement.Items["Dagger"])
 	Equipement.AddConsumable(&jean, Equipement.PoisonDOTPotion)
 	jean.PV = 20
-	//City.Ville1(&jean)
-	// Menu.DisplayInfo(jean)
-	// Menu.AccessInventory(jean)
-	// Menu.ManageInventory(&jean)
-	// Menu.MainMenu(&jean)
+	//Menu.DisplayInfo(jean)
+	Menu.AccessInventory(jean)
+	//Menu.MainMenu(&jean)
 	//battle.RunTerminalCombatDemo()
-	Marchand.Marchand(&jean)
+	//Marchand.Marchand(&jean)
+
+
+	
 
 }
-func turn() {
-	// placeholder: besoin de définir une cible et un personnage pour lancer les combats
-}
+
