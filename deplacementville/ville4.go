@@ -45,7 +45,7 @@ func Ville4(p *personnage.Character, faction string) {
 			salleDuTrone(p)
 			return
 		case 2:
-			rumeurs(p)
+			rumeurs()
 		case 0:
 			return
 		default:
@@ -55,7 +55,7 @@ func Ville4(p *personnage.Character, faction string) {
 	}
 }
 
-func rumeurs(p *personnage.Character) {
+func rumeurs() {
 	switch Faction {
 	case "Heritier":
 		fmt.Println("Les habitants murmurent que le conseil attend impatiemment un roi capable de rétablir l'ordre.")

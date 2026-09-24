@@ -38,7 +38,7 @@ func VilleD(p *personnage.Character) {
 			}
 			fmt.Println("Le menu principal n'est pas disponible.")
 		case 1:
-			renard(p)
+			renard()
 		case 2:
 			if chasse(p) {
 				// La quête de la maison du prince déchu est terminée :
@@ -55,7 +55,7 @@ func VilleD(p *personnage.Character) {
 	}
 }
 
-func renard(p *personnage.Character) {
+func renard() {
 	if DechuProgress == 0 {
 		fmt.Println("Renard vous jauge un instant avant d'éclater de rire. « Un nouveau ! On accueille tout le monde ici, tant qu'on tient debout. »")
 		fmt.Println("« Le prince déchu n'a ni titre ni fortune, seulement des gens prêts à se battre pour qu'on les écoute enfin. »")

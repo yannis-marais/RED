@@ -38,7 +38,7 @@ func VilleH(p *personnage.Character) {
 			}
 			fmt.Println("Le menu principal n'est pas disponible.")
 		case 1:
-			capitaineKaito(p)
+			capitaineKaito()
 		case 2:
 			if patrouille(p) {
 				// La quête de la maison du prince héritier est terminée :
@@ -55,7 +55,7 @@ func VilleH(p *personnage.Character) {
 	}
 }
 
-func capitaineKaito(p *personnage.Character) {
+func capitaineKaito() {
 	if HeritierProgress == 0 {
 		fmt.Println("Le capitaine Kaito vous accueille d'un signe de tête respectueux.")
 		fmt.Println("« Le prince héritier est un homme juste. Nous nous battons pour que l'ordre soit maintenu après le couronnement. »")
