@@ -8,6 +8,36 @@ import (
 	"strconv"
 )
 
+const (
+	inventoryUpgradePrice uint = 50
+	inventoryUpgradeSize  uint = 5
+)
+
+func InventoryUpgradeCost(_ *personnage.Character) uint {
+	return inventoryUpgradePrice
+}
+
+// UpgradeInventory augmente de cinq places la capacité de l'inventaire.
+// Le paiement est effectué uniquement si le personnage possède assez d'or.
+func UpgradeInventory(player *personnage.Character) bool {
+	if player == nil {
+		return false
+	}
+
+	// Les anciennes sauvegardes peuvent ne pas contenir la capacité.
+	if player.Inventory.Capacity == 0 {
+		player.Inventory.Capacity = personnage.DefaultInventoryCapacity
+	}
+
+	if player.Purse < inventoryUpgradePrice {
+		return false
+	}
+
+	player.Purse -= inventoryUpgradePrice
+	player.Inventory.Capacity += inventoryUpgradeSize
+	return true
+}
+
 var achatCatalogue = []string{
 	"Swordshield", "Elementalist_Rings",
 	"Bandit_Helmet", "Bandit_Armor", "Bandit_Boots", "Bandit_Spear",
@@ -33,23 +63,25 @@ var prix = map[string]int{
 	"Huge_Cleaver":      100,
 	"Odachi":            100,
 	"Demonium_Staff":    100,
-	"Maximilian_Helmet": 200,
-	"Maximilian_Armor":  200,
-	"Maximilian_Boots":  200,
-	"La Maxime":         250,
 	"Straw_Hat":         10,
 	"Leather_Patch":     10,
 	"Boots":             10,
 	"Fork":              5,
-	"Healing_Potion":    60,
-	"Poison_DOT_Potion": 60,
+	"Healing_Potion":    20,
+	"Poison_DOT_Potion": 30,
 	"Pain":              15,
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
 
 var inventaire = map[string]int{}
 
+// Marchand affiche le menu unique du marchand : achat d'objets tirés au
+// hasard dans le catalogue, amélioration de l'inventaire et vente d'objets.
 func Marchand(p *personnage.Character, retour func()) {
+	if p == nil {
+		return
+	}
+
 	n := 4
 	if n > len(achatCatalogue) {
 		n = len(achatCatalogue)
@@ -67,18 +99,29 @@ func Marchand(p *personnage.Character, retour func()) {
 		for i, nom := range tirage {
 			fmt.Printf("%d - %s : %d pièces\n", i+1, nom, prix[nom])
 		}
-		fmt.Println("Tape 'v' pour vendre un objet de ton inventaire")
-		fmt.Println("Tape 'q' pour quitter le marchand")
+		fmt.Printf("u - Upgrade inventaire : +%d emplacements pour %d pièces\n", inventoryUpgradeSize, InventoryUpgradeCost(p))
+		fmt.Println("v - Vendre un objet de ton inventaire")
+		fmt.Println("q - Quitter le marchand")
 
 		var saisie string
 		fmt.Scanln(&saisie)
 
-		if saisie == "q" {
-			retour()
+		switch saisie {
+		case "q":
+			if retour != nil {
+				retour()
+			}
 			return
-		}
-		if saisie == "v" {
+		case "v":
 			vendre(p)
+			continue
+		case "u":
+			cost := InventoryUpgradeCost(p)
+			if UpgradeInventory(p) {
+				fmt.Printf("Inventaire agrandi à %d emplacements pour %d pièces.\n", p.Inventory.Capacity, cost)
+			} else {
+				fmt.Println("Tu n'as pas assez de pièces.")
+			}
 			continue
 		}
 
@@ -95,12 +138,22 @@ func Marchand(p *personnage.Character, retour func()) {
 			continue
 		}
 
+		item, ok := Equipement.Items[nomChoisi]
+		if !ok {
+			fmt.Println("objet indisponible")
+			continue
+		}
+
+		before := p.Inventory.Items[item.Name]
+		Equipement.AddItem(p, item)
+		if p.Inventory.Items[item.Name] <= before {
+			fmt.Println("impossible d'ajouter l'objet à l'inventaire (inventaire plein ?)")
+			continue
+		}
+
 		p.Purse -= uint(prixAchat)
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
-		if item, ok := Equipement.Items[nomChoisi]; ok {
-			Equipement.AddItem(p, item)
-		}
 	}
 }
 

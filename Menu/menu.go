@@ -1,7 +1,7 @@
 package ProjetRED
 
 import (
-	//City "ProjetRED/deplacementville"
+	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
@@ -91,7 +91,7 @@ func MainMenu(p *personnage.Character) {
 
 		switch choice {
 		case 1:
-			//City.Ville1(p)
+			City.Ville1(p)
 		case 2:
 			DisplayInfo(*p)
 			WaitForReturn()
@@ -99,7 +99,11 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.Marchand(p, func() {})
+			Marchand.MarchandForPlayer(p, func() {})
+		case 5:
+			Forgeron(p)
+		case 6:
+			if err := SaveCurre			Marchand.Marchand(func() {})
 		case 5:
 			Forgeron(p)
 		case 6:
@@ -214,6 +218,7 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
 	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
+	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("Capacité : %d/%d", p.Inventory.UsedSlots(), p.Inventory.Capacity))
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Objets")
@@ -222,23 +227,7 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Consommables")
 	ecrireSection(&sb, p.Inventory.Consumables)
-
-	fmt.Fprintf(&sb, "├%s┤\n", ligne)
-	fmt.Fprintf(&sb, "│ %-38s │\n", "Matériaux")
-	ecrireSection(&sb, p.Inventory.Materials)
-
-	fmt.Fprintf(&sb, "├%s┤\n", ligne)
-	fmt.Fprintf(&sb, "│ %-38s │\n", "Livre de Sort")
-	ecrireSection(&sb, p.Inventory.SkillBooks)
-
-	fmt.Fprintf(&sb, "╰%s╯\n", ligne)
-
-	result := sb.String()
-	fmt.Print(result)
-	return result
-}
-
-// ecrireSection affiche une map triée par clé, avec un message si elle est vide.
+ ecrireSection affiche une map triée par clé, avec un message si elle est vide.
 func ecrireSection(sb *strings.Builder, items map[string]int) {
 	if len(items) == 0 {
 		fmt.Fprintf(sb, "│   %-36s │\n", "Aucun")

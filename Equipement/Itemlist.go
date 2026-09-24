@@ -45,6 +45,10 @@ func AddItem(p *personnage.Character, item Item) {
 	}
 
 	current := p.Inventory.Items[item.Name]
+	if current == 0 && !p.Inventory.HasFreeSlot(item.Name) {
+		fmt.Println("Inventaire plein pour", item.Name)
+		return
+	}
 	if current < item.MaxStack {
 		p.Inventory.Items[item.Name] = current + 1
 		fmt.Println(item.Name, "ajouté ! Quantité :", current+1)
@@ -68,6 +72,9 @@ func AddMaterial(p *personnage.Character, name string) bool {
 	}
 
 	current := p.Inventory.Materials[name]
+	if current == 0 && !p.Inventory.HasFreeSlot(name) {
+		return false
+	}
 	if current >= material.MaxStack {
 		return false
 	}
@@ -131,11 +138,6 @@ var Items = map[string]Item{
 	"Maximilian_Armor":  {Name: "Maximilian Armor", BonusPV: 50, BonusAtk: 25, BonusDef: 60, MaxStack: 1, Type: "Armor"},
 	"Maximilian_Boots":  {Name: "Maximilian Boots", BonusPV: 30, BonusSpeed: 25, BonusDef: 40, MaxStack: 1, Type: "Boots"},
 	"La Maxime":         {Name: "La Maxime", BonusAtk: 50, BonusSpeed: 20, BonusPV: 50, MaxStack: 1, Type: "Weapon"},
-	//
-	"CASQUE YAYA":  {Name: "Casque YAYA", BonusPV: 999, BonusAtk: 100, MaxStack: 1, Type: "Helmet"},
-	"BOTTE LUCACA": {Name: "Bottes LUCACA", BonusSpeed: 9999, Type: "Boots"},
-	"COMBI FOURMI": {Name: "Combi Ant", BonusAtk: 999, BonusDef: 999, Type: "Armor"},
-	"LE BEDOU":     {Name: "Le Bédou", BonusReiki: 999, BonusAtk: 999, Type: "Weapon"},
 }
 
 var HealingPotion = Consumable{
