@@ -1,8 +1,8 @@
 package ProjetRED
 
 import (
-	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
+	Menu "ProjetRED/menu"
 	"fmt"
 	"time"
 )
@@ -17,21 +17,27 @@ func Ville1(p *personnage.Character) {
 		fmt.Println("j: Aller parler à Jack (il est attentif, comme s'il attendait ta venue).")
 		fmt.Println("e: Partir explorer la ville")
 		fmt.Println("m: pour ouvrir le menu")
+		fmt.Println("0: pour quitter")
 		fmt.Scanln(&saisie)
 		if saisie == "m" {
 			Menu.MainMenu(p)
 		}
 		if saisie == "j" {
-			jack(p)
+			jack()
 		}
 		if saisie == "e" {
 			observation(p)
+			return
+		}
+		if saisie == "0" {
+			return
 		}
 		fmt.Println("Erreur, veuillez entrer une lettre e, j ou m pour le menu")
+		Menu.WaitForReturn()
 	}
 
 }
-func jack(p *personnage.Character) {
+func jack() {
 	fmt.Println("Vous avez parlé à Jack, il vous expliqua que deux princes étaient présents, un héritier et un déchu, les deux groupes cherchant")
 	QuestJack = 1
 }
@@ -59,7 +65,7 @@ func observation(p *personnage.Character) {
 	case 2:
 		MaisonPrinceDechue(p)
 	case 0:
-		return
+		Ville1(p)
 	}
 }
 
@@ -69,6 +75,7 @@ func MaisonPrince(p *personnage.Character) {
 	} else {
 		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service de l'héritier")
 	}
+	VilleH(p)
 }
 func MaisonPrinceDechue(p *personnage.Character) {
 	if QuestJack == 1 {
@@ -76,16 +83,5 @@ func MaisonPrinceDechue(p *personnage.Character) {
 	} else {
 		fmt.Printf("En vous dirigeant vers la maison, vous compreniez que c'est un recrutement ; ne sachant pas les conséquences qui en découlent, vous entrez donc au service du déchu")
 	}
+	VilleD(p)
 }
-
-// choice, reponse := ReadChoice("Votre choix : ")
-// if !reponse {
-// 	fmt.Println("Choix invalide !")
-// 	continue
-// }
-// switch choice {
-// case 1:
-// 	City.Ville1(p)
-// case 2:
-
-// %s designe du caractere quand
