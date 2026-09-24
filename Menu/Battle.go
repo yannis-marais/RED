@@ -1,6 +1,9 @@
 package ProjetRED
 
 import (
+	Equipement "ProjetRED/Equipement"
+	personnage "ProjetRED/Personnage"
+	enemies "ProjetRED/enemies"
 	"bufio"
 	"fmt"
 	"math/rand"
@@ -8,11 +11,7 @@ import (
 	"sort"
 	"strings"
 	"time"
-	Equipement "ProjetRED/Equipement"
-	personnage "ProjetRED/Personnage"
-	enemies "ProjetRED/enemies"
 )
-
 
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
@@ -350,6 +349,11 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 
 		if enemies.IsMonsterDead(monster) {
 			fmt.Println("Victoire ! Le monstre est vaincu.")
+
+			gold := uint(rand.Intn(51) + 50) // 50 à 100 inclus
+			player.Purse += gold
+			fmt.Printf("Vous récupérez %d pièces d'or.\n", gold)
+
 			for _, materialName := range GiveMonsterLoot(player, monster) {
 				fmt.Println("Drop récupéré :", materialName)
 			}
