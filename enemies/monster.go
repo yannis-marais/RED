@@ -1,5 +1,7 @@
 package ProjetRED
 
+import "math/rand"
+
 type LootEntry struct {
 	Name string
 	Rate int
@@ -30,10 +32,9 @@ func initGoblin() MONSTER {
 		Spd:      1,
 		Reiki:    1,
 		Loot: []LootEntry{
-			{Name: "dague rouillée", Rate: 3},
-			{Name: "bourse trouée", Rate: 2},
-			{Name: "oreille de gobelin", Rate: 1},
-			{Name: "torche éteinte", Rate: 2},
+			{Name: "Fer", Rate: 35},
+			{Name: "Bois", Rate: 25},
+			{Name: "Cuir", Rate: 15},
 		},
 	}
 }
@@ -50,9 +51,8 @@ func initSkeleton() MONSTER {
 		Spd:      20,
 		Reiki:    2,
 		Loot: []LootEntry{
-			{Name: "tibia", Rate: 8},
-			{Name: "crâne fissuré", Rate: 5},
-			{Name: "épée rouillée", Rate: 20},
+			{Name: "Fer", Rate: 45},
+			{Name: "Cuir", Rate: 10},
 		},
 	}
 }
@@ -69,10 +69,9 @@ func initTroll() MONSTER {
 		Spd:      3,
 		Reiki:    1,
 		Loot: []LootEntry{
-			{Name: "massue en bois", Rate: 6},
-			{Name: "peau de troll", Rate: 12},
-			{Name: "dent de troll", Rate: 4},
-			{Name: "gourdin ébréché", Rate: 5},
+			{Name: "Bois", Rate: 40},
+			{Name: "Cuir", Rate: 35},
+			{Name: "Fer", Rate: 20},
 		},
 	}
 }
@@ -89,9 +88,8 @@ func initVouivre() MONSTER {
 		Spd:      200,
 		Reiki:    12,
 		Loot: []LootEntry{
-			{Name: "écaille de vouivre", Rate: 15},
-			{Name: "griffe de vouivre", Rate: 10},
-			{Name: "venin cristallisé", Rate: 20},
+			{Name: "Cuir", Rate: 45},
+			{Name: "Cristal", Rate: 25},
 		},
 	}
 }
@@ -108,9 +106,8 @@ func initLoupGarou() MONSTER {
 		Spd:      25,
 		Reiki:    4,
 		Loot: []LootEntry{
-			{Name: "griffe de loup-garou", Rate: 14},
-			{Name: "fourrure argentée", Rate: 18},
-			{Name: "croc acéré", Rate: 9},
+			{Name: "Cuir", Rate: 50},
+			{Name: "Fer", Rate: 15},
 		},
 	}
 }
@@ -127,10 +124,8 @@ func initZombie() MONSTER {
 		Spd:      4,
 		Reiki:    1,
 		Loot: []LootEntry{
-			{Name: "chair putréfiée", Rate: 5},
-			{Name: "os brisé", Rate: 8},
-			{Name: "lambeau de tissu", Rate: 5},
-			{Name: "anneau rouillé", Rate: 10},
+			{Name: "Cuir", Rate: 30},
+			{Name: "Fer", Rate: 25},
 		},
 	}
 }
@@ -147,9 +142,8 @@ func initOrc() MONSTER {
 		Spd:      16,
 		Reiki:    1,
 		Loot: []LootEntry{
-			{Name: "hache d'orc", Rate: 11},
-			{Name: "bouclier cabossé", Rate: 9},
-			{Name: "défense d'orc", Rate: 6},
+			{Name: "Fer", Rate: 55},
+			{Name: "Cuir", Rate: 30},
 		},
 	}
 }
@@ -166,10 +160,9 @@ func initDragon() MONSTER {
 		Spd:      10,
 		Reiki:    18,
 		Loot: []LootEntry{
-			{Name: "écaille de dragon", Rate: 40},
-			{Name: "griffe de dragon", Rate: 30},
-			{Name: "souffle embouteillé", Rate: 50},
-			{Name: "œuf de dragon", Rate: 100},
+			{Name: "Cristal", Rate: 60},
+			{Name: "Diamant", Rate: 25},
+			{Name: "Fer", Rate: 40},
 		},
 	}
 }
@@ -186,7 +179,7 @@ func initBrian() MONSTER {
 		Spd:      4000,
 		Reiki:    18,
 		Loot: []LootEntry{
-			{Name: "LE BEDOU", Rate: 99},
+			{Name: "Diamant", Rate: 99},
 		},
 	}
 }
@@ -203,7 +196,7 @@ func initAnt() MONSTER {
 		Spd:      4000,
 		Reiki:    18,
 		Loot: []LootEntry{
-			{Name: "COMBI FOURMI", Rate: 99},
+			{Name: "Cristal", Rate: 99},
 		},
 	}
 }
@@ -220,7 +213,7 @@ func initLucas() MONSTER {
 		Spd:      1,
 		Reiki:    2,
 		Loot: []LootEntry{
-			{Name: "BOTTE LUCACA", Rate: 99},
+			{Name: "Diamant", Rate: 99},
 		},
 	}
 }
@@ -237,9 +230,23 @@ func initYannis() MONSTER {
 		Spd:      100000000,
 		Reiki:    2,
 		Loot: []LootEntry{
-			{Name: "CASQUE YAYA", Rate: 99},
+			{Name: "Fer", Rate: 99},
 		},
 	}
+}
+
+func RollLoot(m *MONSTER) []string {
+	if m == nil {
+		return nil
+	}
+
+	loot := make([]string, 0, len(m.Loot))
+	for _, entry := range m.Loot {
+		if entry.Name != "" && entry.Rate > 0 && rand.Intn(100) < entry.Rate {
+			loot = append(loot, entry.Name)
+		}
+	}
+	return loot
 }
 
 func IsMonsterDead(m *MONSTER) bool {

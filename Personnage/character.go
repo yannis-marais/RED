@@ -35,7 +35,7 @@ type Character struct {
 	Armor  string
 	Boots  string
 
-	Purse uint
+	Purse     uint
 	Inventory Inventory
 	Effects   []StatusEffect
 
@@ -59,7 +59,7 @@ type Classe struct {
 func CharacterCreation(nom string, classe Classe) Character {
 	return Character{
 		Nom:      Capitalize(nom),
-		Purse:	  100,
+		Purse:    100,
 		Classe:   classe,
 		LVL:      1,
 		XP:       0,

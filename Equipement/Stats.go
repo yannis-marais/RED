@@ -3,14 +3,23 @@ package ProjetRED
 import personnage "ProjetRED/Personnage"
 
 func RecalculateStats(p *personnage.Character) {
+	if p == nil {
+		return
+	}
+
+	p.PVMax = p.Classe.PVMax
+	p.Strength = p.Classe.Strength
+	p.Defense = p.Classe.Defense
+	p.Reiki = p.Classe.Reiki
+	p.Spd = p.Classe.Spd
+
 	for _, slot := range []string{p.Weapon, p.Armor, p.Boots, p.Helmet} {
 		if item, ok := Items[slot]; ok {
-			p.PVMax = p.Classe.PVMax + item.BonusPV
-			p.Strength = p.Classe.Strength + item.BonusAtk
-			p.Defense = p.Classe.Defense + item.BonusDef
-			p.Reiki = p.Classe.Reiki + item.BonusReiki
-			p.Spd = p.Classe.Spd + item.BonusSpeed
-			p.PV = p.PV + HealingPotion.Heal + Pain.Heal
+			p.PVMax += item.BonusPV
+			p.Strength += item.BonusAtk
+			p.Defense += item.BonusDef
+			p.Reiki += item.BonusReiki
+			p.Spd += item.BonusSpeed
 		}
 	}
 

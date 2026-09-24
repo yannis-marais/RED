@@ -19,6 +19,20 @@ func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
 }
 
+func GiveMonsterLoot(p *personnage.Character, monstre *enemies.MONSTER) []string {
+	if p == nil || monstre == nil || !enemies.IsMonsterDead(monstre) {
+		return nil
+	}
+
+	dropped := make([]string, 0)
+	for _, lootName := range enemies.RollLoot(monstre) {
+		if Equipement.AddLoot(p, lootName) {
+			dropped = append(dropped, lootName)
+		}
+	}
+	return dropped
+}
+
 func lifeBar(current, max, width int) string {
 	if max <= 0 || width <= 0 {
 		return "[--]"
@@ -338,6 +352,9 @@ func RunTerminalCombatDemo() {
 
 		if monstre.PV <= 0 && monstre.PVR <= 0 {
 			fmt.Println("Victoire ! Le Gobelin est vaincu.")
+			for _, materialName := range GiveMonsterLoot(&p, &monstre) {
+				fmt.Println("Drop récupéré :", materialName)
+			}
 			return
 		}
 

@@ -54,7 +54,13 @@ func TestEquipItemByNameReplacesOldEquipmentAndUpdatesStats(t *testing.T) {
 	if player.Strength != player.Classe.Strength+5 {
 		t.Fatalf("expected strength %d, got %d", player.Classe.Strength+5, player.Strength)
 	}
-	if player.Defense != player.Classe.Defense+10 {
-		t.Fatalf("expected defense %d, got %d", player.Classe.Defense+10, player.Defense)
+	expectedDefense := player.Classe.Defense + 10 + 12 + 7 + 10
+	if player.Defense != expectedDefense {
+		t.Fatalf("expected defense %d from all equipped items, got %d", expectedDefense, player.Defense)
+	}
+
+	RecalculateStats(&player)
+	if player.Defense != expectedDefense {
+		t.Fatalf("expected recalculating stats to stay at %d, got %d", expectedDefense, player.Defense)
 	}
 }

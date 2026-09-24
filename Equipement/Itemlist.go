@@ -54,6 +54,44 @@ func AddItem(p *personnage.Character, item Item) {
 	fmt.Println("Impossible : stack maximum atteint pour", item.Name)
 }
 
+func AddMaterial(p *personnage.Character, name string) bool {
+	if p == nil {
+		return false
+	}
+
+	material, ok := Materials[name]
+	if !ok {
+		return false
+	}
+	if p.Inventory.Materials == nil {
+		p.Inventory.Materials = make(map[string]int)
+	}
+
+	current := p.Inventory.Materials[name]
+	if current >= material.MaxStack {
+		return false
+	}
+	p.Inventory.Materials[name] = current + 1
+	return true
+}
+
+func AddLoot(p *personnage.Character, name string) bool {
+	if AddMaterial(p, name) {
+		return true
+	}
+
+	_, item, ok := FindItemByName(name)
+	if !ok {
+		return false
+	}
+	before := 0
+	if p != nil {
+		before = p.Inventory.Items[item.Name]
+	}
+	AddItem(p, item)
+	return p != nil && p.Inventory.Items[item.Name] > before
+}
+
 var Items = map[string]Item{
 	//T1 Ronin
 	"Bandit_Helmet": {Name: "Bandit Helmet", BonusDef: 10, BonusPV: 15, MaxStack: 1, Type: "Helmet"},
@@ -93,6 +131,11 @@ var Items = map[string]Item{
 	"Maximilian_Armor":  {Name: "Maximilian Armor", BonusPV: 50, BonusAtk: 25, BonusDef: 60, MaxStack: 1, Type: "Armor"},
 	"Maximilian_Boots":  {Name: "Maximilian Boots", BonusPV: 30, BonusSpeed: 25, BonusDef: 40, MaxStack: 1, Type: "Boots"},
 	"La Maxime":         {Name: "La Maxime", BonusAtk: 50, BonusSpeed: 20, BonusPV: 50, MaxStack: 1, Type: "Weapon"},
+	//
+	"CASQUE YAYA":  {Name: "Casque YAYA", BonusPV: 999, BonusAtk: 100, MaxStack: 1, Type: "Helmet"},
+	"BOTTE LUCACA": {Name: "Bottes LUCACA", BonusSpeed: 9999, Type: "Boots"},
+	"COMBI FOURMI": {Name: "Combi Ant", BonusAtk: 999, BonusDef: 999, Type: "Armor"},
+	"LE BEDOU":     {Name: "Le Bédou", BonusReiki: 999, BonusAtk: 999, Type: "Weapon"},
 }
 
 var HealingPotion = Consumable{
@@ -119,7 +162,6 @@ var Materials = map[string]Material{
 	"Diamant": {Name: "Diamant", MaxStack: 64},
 }
 
-
 var ConsumablesRegistry = map[string]Consumable{
 	HealingPotion.Name:   HealingPotion,
 	PoisonDOTPotion.Name: PoisonDOTPotion,
@@ -130,4 +172,3 @@ func GetConsumableByName(name string) (Consumable, bool) {
 	item, ok := ConsumablesRegistry[name]
 	return item, ok
 }
-
