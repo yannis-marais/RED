@@ -5,6 +5,8 @@ import (
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
 	City "ProjetRED/deplacementville"
+	Battle "ProjetRED/Battle"
+	Monster "ProjetRED/enemies"
 	"bufio"
 	"fmt"
 	"os"
@@ -82,6 +84,8 @@ func MainMenu(p *personnage.Character) {
 		fmt.Println("5. Forgeron")
 		fmt.Println("6. Sauvegarder")
 		fmt.Println("7. Charger la sauvegarde")
+		fmt.Println("8. Faire un combat d'entrainement")
+		fmt.Println("9. Qui sont les acteurs cachés")
 		fmt.Println("0. Quitter")
 
 		choice, reponse := ReadChoice("Votre choix : ")
@@ -120,6 +124,18 @@ func MainMenu(p *personnage.Character) {
 				CurrentPlayer = player
 				*p = *player
 			}
+			WaitForReturn()
+		case 8:
+			Battle.StartCombat(p, initSkeleton())
+		case 9:
+			fmt.Println("=== les artistes sont :===")
+			WaitForReturn()
+			fmt.Println("Gimme Gimme Gimme est le titre d'un morceau de musique disco")
+			fmt.Println("écrit par deux membres du groupe ABBA : ")
+			fmt.Println("Benny Andersson et Björn Ulvaeus")
+			fmt.Println("ce groupe est plus particulièrement célèbre pour leur titre :")
+			fmt.Println("Dancing Queen")
+			fmt.Println("ils ont cartonner dans les années 70-80")
 			WaitForReturn()
 		case 0:
 			fmt.Println("À bientôt !")
