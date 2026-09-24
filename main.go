@@ -22,7 +22,7 @@ func main() {
 	// Menu.ManageInventory(&jean)
 	// Menu.MainMenu(&jean)
 	//battle.RunTerminalCombatDemo()
-	Marchand.Marchand(&jean, func() {})
+	Marchand.Marchand(&jean)
 
 }
 func turn() {

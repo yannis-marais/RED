@@ -1,8 +1,8 @@
 package ProjetRED
 
 import (
+	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
-	Menu "ProjetRED/menu"
 	"fmt"
 	"time"
 )

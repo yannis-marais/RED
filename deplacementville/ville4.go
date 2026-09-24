@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func Ville4() {
+func Ville4(p *personnage.Character) {
 	for {
 		if !QueteVille3Terminee {
 			fmt.Println("Tu dois d'abord terminer la quête du désert (ville 3) avant d'accéder à la ville 4.")

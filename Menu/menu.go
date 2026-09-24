@@ -1,10 +1,10 @@
 package ProjetRED
 
 import (
-	City "ProjetRED/deplacementville"
 	Equipement "ProjetRED/Equipement"
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
+	City "ProjetRED/deplacementville"
 	"bufio"
 	"fmt"
 	"os"
@@ -99,11 +99,7 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.MarchandForPlayer(p, func() {})
-		case 5:
-			Forgeron(p)
-		case 6:
-			Marchand.Marchand(p, func() {})
+			Marchand.Marchand(p)
 		case 5:
 			Forgeron(p)
 		case 6:
@@ -120,6 +116,7 @@ func MainMenu(p *personnage.Character) {
 			} else {
 				fmt.Println("Partie chargée depuis save.json")
 				CurrentPlayer = player
+				*p = *player
 			}
 			WaitForReturn()
 		case 0:
