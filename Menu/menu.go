@@ -126,7 +126,12 @@ func MainMenu(p *personnage.Character) {
 			}
 			WaitForReturn()
 		case 8:
-			Battle.StartCombat(p, initSkeleton())
+			monstre, ok := Monster.SpawnMonster("squelette")
+			if !ok {
+				fmt.Println("Impossible de créer le monstre d'entraînement.")
+				continue
+			}
+			Battle.StartCombat(p, monstre)
 		case 9:
 			fmt.Println("=== les artistes sont :===")
 			WaitForReturn()
