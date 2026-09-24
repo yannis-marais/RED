@@ -26,9 +26,9 @@ func TestUpgradeInventoryRejectsInsufficientPurse(t *testing.T) {
 	player.Purse = 99
 
 	if UpgradeInventory(&player) {
-		t.Fatal("expected upgrade to be rejected")
+		t.Fatal("La demande à été refusé")
 	}
 	if player.Inventory.Capacity != personnage.DefaultInventoryCapacity {
-		t.Fatalf("capacity changed despite insufficient purse")
+		t.Fatalf("Pas assez de purse")
 	}
 }

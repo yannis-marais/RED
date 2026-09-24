@@ -33,13 +33,12 @@ func GiveSkillBook(p *personnage.Character, book SkillBook) {
 	if p == nil {
 		return
 	}
+	if p.Inventory.SkillBooks == nil {
+		p.Inventory.SkillBooks = make(map[string]int)
+	}
 
 	qty := p.Inventory.SkillBooks[book.Name]
-	if qty == 0 && !p.Inventory.HasFreeSlot(book.Name) {
-		fmt.Println("Inventaire plein pour", book.Name)
-		return
-	}
-	if qty >= book.MaxStack {
+	if book.MaxStack > 0 && qty >= book.MaxStack {
 		fmt.Println("Impossible :", p.Nom, "possède déjà", book.Name)
 		return
 	}
@@ -51,6 +50,9 @@ func GiveSkillBook(p *personnage.Character, book SkillBook) {
 func LearnSkill(p *personnage.Character, book SkillBook) {
 	if p == nil {
 		return
+	}
+	if p.Inventory.SkillBooks == nil {
+		p.Inventory.SkillBooks = make(map[string]int)
 	}
 
 	qty := p.Inventory.SkillBooks[book.Name]

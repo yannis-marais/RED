@@ -138,11 +138,6 @@ var Items = map[string]Item{
 	"Maximilian_Armor":  {Name: "Maximilian Armor", BonusPV: 50, BonusAtk: 25, BonusDef: 60, MaxStack: 1, Type: "Armor"},
 	"Maximilian_Boots":  {Name: "Maximilian Boots", BonusPV: 30, BonusSpeed: 25, BonusDef: 40, MaxStack: 1, Type: "Boots"},
 	"La Maxime":         {Name: "La Maxime", BonusAtk: 50, BonusSpeed: 20, BonusPV: 50, MaxStack: 1, Type: "Weapon"},
-	//
-	"CASQUE YAYA":  {Name: "Casque YAYA", BonusPV: 999, BonusAtk: 100, MaxStack: 1, Type: "Helmet"},
-	"BOTTE LUCACA": {Name: "Bottes LUCACA", BonusSpeed: 9999, Type: "Boots"},
-	"COMBI FOURMI": {Name: "Combi Ant", BonusAtk: 999, BonusDef: 999, Type: "Armor"},
-	"LE BEDOU":     {Name: "Le Bédou", BonusReiki: 999, BonusAtk: 999, Type: "Weapon"},
 }
 
 var HealingPotion = Consumable{

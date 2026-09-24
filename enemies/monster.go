@@ -179,7 +179,7 @@ func initBrian() MONSTER {
 		Spd:      4000,
 		Reiki:    18,
 		Loot: []LootEntry{
-			{Name: "Diamant", Rate: 99},
+			{Name: "LE BEDOU", Rate: 99},
 		},
 	}
 }
@@ -196,7 +196,7 @@ func initAnt() MONSTER {
 		Spd:      4000,
 		Reiki:    18,
 		Loot: []LootEntry{
-			{Name: "Cristal", Rate: 99},
+			{Name: "COMBI FOURMI", Rate: 99},
 		},
 	}
 }
@@ -213,7 +213,7 @@ func initLucas() MONSTER {
 		Spd:      1,
 		Reiki:    2,
 		Loot: []LootEntry{
-			{Name: "Diamant", Rate: 99},
+			{Name: "BOTTE LUCACA", Rate: 99},
 		},
 	}
 }
@@ -230,7 +230,7 @@ func initYannis() MONSTER {
 		Spd:      100000000,
 		Reiki:    2,
 		Loot: []LootEntry{
-			{Name: "Fer", Rate: 99},
+			{Name: "CASQUE YAYA", Rate: 99},
 		},
 	}
 }
