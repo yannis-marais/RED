@@ -1,6 +1,8 @@
 package ProjetRED
 
 import (
+	Equipement "ProjetRED/Equipement"
+	personnage "ProjetRED/Personnage"
 	"bufio"
 	"fmt"
 	"math/rand"
@@ -8,23 +10,48 @@ import (
 	"sort"
 	"strings"
 	"time"
-	Equipement "ProjetRED/Equipement"
-	personnage "ProjetRED/Personnage"
-	enemies "ProjetRED/enemies"
 )
 
+type MONSTER struct {
+	NOM      string
+	PV       int
+	PVMax    int
+	PVR      int
+	PVMAXR   int
+	Strength int
+	Spd      int
+}
+
+func IsMonsterDead(monstre *MONSTER) bool {
+	return monstre == nil || monstre.PV <= 0
+}
+
+func IsEnemyDead(monstre *MONSTER) bool {
+	return IsMonsterDead(monstre)
+}
+
+func RollLoot(monstre *MONSTER) []string {
+	if monstre == nil {
+		return nil
+	}
+	return make([]string, 0)
+}
+
+func RollEnemyLoot(monstre *MONSTER) []string {
+	return RollLoot(monstre)
+}
 
 func isDead(p *personnage.Character) bool {
 	return p == nil || p.PV <= 0
 }
 
-func GiveMonsterLoot(p *personnage.Character, monstre *enemies.MONSTER) []string {
-	if p == nil || monstre == nil || !enemies.IsMonsterDead(monstre) {
+func GiveMonsterLoot(p *personnage.Character, monstre *MONSTER) []string {
+	if p == nil || monstre == nil || !IsMonsterDead(monstre) {
 		return nil
 	}
 
 	dropped := make([]string, 0)
-	for _, lootName := range enemies.RollLoot(monstre) {
+	for _, lootName := range RollLoot(monstre) {
 		if Equipement.AddLoot(p, lootName) {
 			dropped = append(dropped, lootName)
 		}
@@ -164,7 +191,7 @@ func performQTE() (float64, string) {
 	return 0.8, "RATÉ"
 }
 
-func applyAttackDamage(p *personnage.Character, monstre *enemies.MONSTER, baseDamage int, target string, multiplier float64) {
+func applyAttackDamage(p *personnage.Character, monstre *MONSTER, baseDamage int, target string, multiplier float64) {
 	if p == nil || monstre == nil {
 		return
 	}
@@ -196,9 +223,12 @@ func applyAttackDamage(p *personnage.Character, monstre *enemies.MONSTER, baseDa
 	}
 }
 
-func applySkillWithMultiplier(p *personnage.Character, monstre *enemies.MONSTER, skillName string, multiplier float64) bool {
+func applySkillWithMultiplier(p *personnage.Character, monstre *MONSTER, skillName string, multiplier float64) bool {
 	if p == nil || monstre == nil {
 		return false
+	}
+	if p.Cooldowns == nil {
+		p.Cooldowns = make(map[string]int)
 	}
 
 	if cooldown, exists := p.Cooldowns[skillName]; exists && cooldown > 0 {
@@ -225,12 +255,12 @@ func applySkillWithMultiplier(p *personnage.Character, monstre *enemies.MONSTER,
 	return true
 }
 
-func applySkill(p *personnage.Character, monstre *enemies.MONSTER, skillName string) bool {
+func applySkill(p *personnage.Character, monstre *MONSTER, skillName string) bool {
 	multiplier, _ := performQTE()
 	return applySkillWithMultiplier(p, monstre, skillName, multiplier)
 }
 
-func usePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
+func usePlayerSkill(p *personnage.Character, monstre *MONSTER) bool {
 	if p == nil || monstre == nil {
 		return false
 	}
@@ -270,19 +300,19 @@ func PerformQTE() (float64, string) {
 	return performQTE()
 }
 
-func ApplyAttackDamage(p *personnage.Character, monstre *enemies.MONSTER, baseDamage int, target string, multiplier float64) {
+func ApplyAttackDamage(p *personnage.Character, monstre *MONSTER, baseDamage int, target string, multiplier float64) {
 	applyAttackDamage(p, monstre, baseDamage, target, multiplier)
 }
 
-func UsePlayerSkill(p *personnage.Character, monstre *enemies.MONSTER) bool {
+func UsePlayerSkill(p *personnage.Character, monstre *MONSTER) bool {
 	return usePlayerSkill(p, monstre)
 }
 
-func MakeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
+func MakeAWish(p *personnage.Character, monstre *MONSTER) {
 	makeAWish(p, monstre)
 }
 
-func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
+func StartCombat(player *personnage.Character, monster *MONSTER) bool {
 	if player == nil || monster == nil {
 		fmt.Println("Combat impossible : personnage ou monstre invalide.")
 		return false
@@ -292,7 +322,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 		return false
 	}
 
-	for player.PV > 0 && !enemies.IsMonsterDead(monster) {
+	for player.PV > 0 && !IsMonsterDead(monster) {
 
 		// Si le monstre est plus rapide, il attaque avant que tu n'agisses
 		if monster.Spd > player.Spd {
@@ -348,7 +378,7 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 			continue
 		}
 
-		if enemies.IsMonsterDead(monster) {
+		if IsMonsterDead(monster) {
 			fmt.Println("Victoire ! Le monstre est vaincu.")
 			for _, materialName := range GiveMonsterLoot(player, monster) {
 				fmt.Println("Drop récupéré :", materialName)
@@ -385,7 +415,15 @@ func StartCombat(player *personnage.Character, monster *enemies.MONSTER) bool {
 	return true
 }
 
-func makeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
+func makeAWish(p *personnage.Character, monstre *MONSTER) {
+	if p == nil || monstre == nil {
+		fmt.Println("Make a Wish impossible : personnage ou monstre invalide.")
+		return
+	}
+	if p.Effects == nil {
+		p.Effects = make([]personnage.StatusEffect, 0)
+	}
+
 	fmt.Println("\nVous invoquez Make a Wish...")
 
 	tirage := rand.Intn(100)
@@ -394,12 +432,18 @@ func makeAWish(p *personnage.Character, monstre *enemies.MONSTER) {
 	case tirage < 35:
 		degats := rand.Intn(20) + 5
 		p.PV -= degats
+		if p.PV < 0 {
+			p.PV = 0
+		}
 		fmt.Printf("Le sort se retourne contre vous ! Vous subissez %d dégâts\n", degats)
 		fmt.Printf("%s : PV %d/%d\n", p.Nom, p.PV, p.PVMax)
 
 	case tirage < 60:
 		degats := rand.Intn(15) + 5
 		monstre.PV -= degats
+		if monstre.PV < 0 {
+			monstre.PV = 0
+		}
 		fmt.Printf("Décharge instable ! %d dégâts infligés à %s\n", degats, monstre.NOM)
 		fmt.Printf("%s : PV %d/%d\n", monstre.NOM, monstre.PV, monstre.PVMax)
 

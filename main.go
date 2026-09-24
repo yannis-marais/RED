@@ -4,10 +4,12 @@ import (
 	//Equipement "ProjetRED/Equipement"
 	//battle "ProjetRED/Battle"
 	Menu "ProjetRED/Menu"
+	"ProjetRED/world"
 	//personnage "ProjetRED/Personnage"
 )
 
 func main() {
+	world.SeedRandom()
 	// jean := personnage.CharacterCreation("jean", personnage.Classes["Ronin"])
 	// Equipement.AddConsumable(&jean, Equipement.HealingPotion)
 	// Equipement.AddItem(&jean, Equipement.Items["Swordshield"])
@@ -23,4 +25,3 @@ func main() {
 	Menu.StartMenu()
 
 }
-

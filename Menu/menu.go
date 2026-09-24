@@ -5,8 +5,6 @@ import (
 	Marchand "ProjetRED/Marchand"
 	personnage "ProjetRED/Personnage"
 	City "ProjetRED/deplacementville"
-	Monster "ProjetRED/enemies"
-	"ProjetRED/world"
 	"bufio"
 	"fmt"
 	"os"
@@ -16,6 +14,7 @@ import (
 )
 
 var CurrentPlayer *personnage.Character
+var inputScanner = bufio.NewScanner(os.Stdin)
 
 func SetCurrentPlayer(p *personnage.Character) {
 	CurrentPlayer = p
@@ -40,35 +39,38 @@ func LoadCurrentGame() (*personnage.Character, error) {
 
 // menu du lancement
 func StartMenu() {
+	for {
+		fmt.Println("\n=== MENU CREATION ===")
+		fmt.Println("1. Crée un nouveau Personage")
+		fmt.Println("2. Charger une sauvegarde")
+		fmt.Println("0. Quitter")
 
-	fmt.Println("\n=== MENU CREATION ===")
-	fmt.Println("1. Crée un nouveau Personage")
-	fmt.Println("2. Charger une sauvegarde")
-	fmt.Println("0. Quitter")
-	choice, reponse := ReadChoice("Votre choix : ")
-	if !reponse {
-		fmt.Println("Choix invalide !")
-		StartMenu()
-	}
-	switch choice {
-	case 1:
-		Player := personnage.CharacterCreation(CreerPerso())
-		SetCurrentPlayer(&Player)
-		MainMenu(&Player)
-	case 2:
-		player, err := LoadCurrentGame()
-		if err != nil {
-			fmt.Println("Aucune sauvegarde trouvée.")
-			StartMenu()
-			return
+		choice, reponse := ReadChoice("Votre choix : ")
+		if !reponse {
+			fmt.Println("Choix invalide !")
+			continue
 		}
-		MainMenu(player)
-	case 0:
-		fmt.Println("Au Revoir !")
-		return
-	default:
-		fmt.Println("Choix invalide !")
 
+		switch choice {
+		case 1:
+			Player := personnage.CharacterCreation(CreerPerso())
+			SetCurrentPlayer(&Player)
+			MainMenu(&Player)
+			return
+		case 2:
+			player, err := LoadCurrentGame()
+			if err != nil {
+				fmt.Println("Aucune sauvegarde trouvée.")
+				continue
+			}
+			MainMenu(player)
+			return
+		case 0:
+			fmt.Println("Au Revoir !")
+			return
+		default:
+			fmt.Println("Choix invalide !")
+		}
 	}
 }
 
@@ -126,12 +128,8 @@ func MainMenu(p *personnage.Character) {
 			}
 			WaitForReturn()
 		case 8:
-			monstre, ok := Monster.SpawnMonster(world.Aleatoire("ville1"))
-			if !ok {
-				fmt.Println("Impossible de créer le monstre d'entraînement.")
-				continue
-			}
-			StartCombat(p, monstre)
+			fmt.Println("Le système de combat d'entraînement est temporairement indisponible.")
+			WaitForReturn()
 		case 9:
 			fmt.Println("=== les artistes sont :===")
 			WaitForReturn()
@@ -155,12 +153,16 @@ func MainMenu(p *personnage.Character) {
 func ReadChoice(prompt string) (int, bool) {
 	fmt.Print(prompt)
 
-	scanner := bufio.NewScanner(os.Stdin)
-	if !scanner.Scan() {
+	if !inputScanner.Scan() {
 		return 0, false
 	}
 
-	value, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+	text := strings.TrimSpace(inputScanner.Text())
+	if text == "" {
+		return 0, false
+	}
+
+	value, err := strconv.Atoi(text)
 	if err != nil {
 		return 0, false
 	}
@@ -171,7 +173,7 @@ func ReadChoice(prompt string) (int, bool) {
 // attend que le joeure apuis sur entré
 func WaitForReturn() {
 	fmt.Println("Appuyez sur Entrée pour continuer...")
-	_, _ = fmt.Scanln()
+	_ = inputScanner.Scan()
 }
 
 // affiche les info du joeur
@@ -281,9 +283,10 @@ func ecrireSection(sb *strings.Builder, items map[string]int) {
 // fonction renvoie les variables qui seront données au character creator
 func CreerPerso() (string, personnage.Classe) {
 	fmt.Print("Quel est votre nom ? ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	nom := strings.TrimSpace(scanner.Text())
+	if !inputScanner.Scan() {
+		return "", personnage.Classes["Ronin"]
+	}
+	nom := strings.TrimSpace(inputScanner.Text())
 
 	fmt.Println("Choisissez le numero d'une classe :")
 	fmt.Println("1. Ronin")
@@ -310,37 +313,36 @@ func CreerPerso() (string, personnage.Classe) {
 }
 
 func ManageInventory(p *personnage.Character) {
-	AccessInventory(*p)
+	for {
+		AccessInventory(*p)
 
-	fmt.Println("\n=== Inventaire ===")
-	fmt.Println("1. Interagire avec les Objets ")    // armure etc
-	fmt.Println("2. Interagire avec les Consomable") // potion
-	fmt.Println("3. Interagire avec les Livre de Sort ")
-	fmt.Println("0. Quitter")
+		fmt.Println("\n=== Inventaire ===")
+		fmt.Println("1. Interagire avec les Objets ")    // armure etc
+		fmt.Println("2. Interagire avec les Consomable") // potion
+		fmt.Println("3. Interagire avec les Livre de Sort ")
+		fmt.Println("0. Quitter")
 
-	choice, reponse := ReadChoice("Votre choix : ")
+		choice, reponse := ReadChoice("Votre choix : ")
+		if !reponse {
+			fmt.Println("Choix invalide !")
+			continue
+		}
 
-	if !reponse {
-		fmt.Println("Choix invalide !")
-		ManageInventory(p)
-		return
-	}
-
-	switch choice {
-	case 1:
-		SelectFromList(p, DisplayItem(*p), "item")
-		WaitForReturn()
-	case 2:
-		SelectFromList(p, DisplayConsumables(*p), "consumable")
-		WaitForReturn()
-	case 3:
-		SelectFromList(p, DisplaySkillBooks(*p), "skillbook")
-		WaitForReturn()
-	case 0:
-		return
-	default:
-		fmt.Println("Choix invalide !")
-		ManageInventory(p)
+		switch choice {
+		case 1:
+			SelectFromList(p, DisplayItem(*p), "item")
+			WaitForReturn()
+		case 2:
+			SelectFromList(p, DisplayConsumables(*p), "consumable")
+			WaitForReturn()
+		case 3:
+			SelectFromList(p, DisplaySkillBooks(*p), "skillbook")
+			WaitForReturn()
+		case 0:
+			return
+		default:
+			fmt.Println("Choix invalide !")
+		}
 	}
 }
 
@@ -365,7 +367,6 @@ func DisplayItem(p personnage.Character) []string {
 	return names
 }
 
- 
 // Crée une nouvelle func qui permet de lister tout ce qu'il y a dans la partie Inventory.Consumables
 func DisplayConsumables(p personnage.Character) []string {
 	if len(p.Inventory.Consumables) == 0 {
@@ -416,19 +417,19 @@ func SelectFromList(p *personnage.Character, names []string, category string) st
 	}
 
 	fmt.Println("0. Ne rien faire")
-	fmt.Print("Choisis le Numero de l'objet que tu souhaite Utilisé/Equipé : ")
-	var choice int
-	fmt.Scan(&choice)
+	choice, ok := ReadChoice("Choisis le Numero de l'objet que tu souhaite Utilisé/Equipé : ")
+	if !ok {
+		fmt.Println("Choix invalide.")
+		return ""
+	}
 
 	if choice == 0 {
 		fmt.Println("Aucune action effectuée.")
-		SelectFromList(p, names, category)
 		return ""
 	}
 
 	if choice < 1 || choice > len(names) {
 		fmt.Println("Choix invalide.")
-		SelectFromList(p, names, category)
 		return ""
 	}
 
