@@ -10,8 +10,7 @@ func Ville2() {
 	for {
 		if !QueteVille1Terminee {
 			fmt.Println("Tu dois d'abord terminer la quête de la forêt (ville 1) avant d'accéder à la ville 2.")
-			Menuvilleversville()
-			return
+			Menu.MainMenu()
 		}
 
 		const j = "j"

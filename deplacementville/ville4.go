@@ -1,17 +1,16 @@
 package ProjetRED
 
 import (
+	Menu "PrjoetRED/Menu"
 	Marchand "ProjetRED/Marchand"
 	"fmt"
-    Menu "PrjoetRED/Menu"
 )
 
 func Ville4() {
 	for {
 		if !QueteVille3Terminee {
 			fmt.Println("Tu dois d'abord terminer la quête du désert (ville 3) avant d'accéder à la ville 4.")
-			Menuvilleversville()
-			return
+			Menu.MainMenu()
 		}
 
 		const j = "j"
