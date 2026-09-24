@@ -56,6 +56,8 @@ type Classe struct {
 	Boots    string
 }
 
+const DefaultInventoryCapacity uint = 20
+
 func CharacterCreation(nom string, classe Classe) Character {
 	return Character{
 		Nom:      Capitalize(nom),
@@ -74,6 +76,7 @@ func CharacterCreation(nom string, classe Classe) Character {
 		Armor:    classe.Armor,
 		Boots:    classe.Boots,
 		Inventory: Inventory{
+			Capacity:    DefaultInventoryCapacity,
 			Items:       make(map[string]int),
 			Consumables: make(map[string]int),
 			Materials:   make(map[string]int),
@@ -86,6 +89,7 @@ func CharacterCreation(nom string, classe Classe) Character {
 }
 
 type Inventory struct {
+	Capacity    uint
 	Items       map[string]int
 	Consumables map[string]int
 	Materials   map[string]int
