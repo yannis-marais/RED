@@ -1,6 +1,8 @@
 package ProjetRED
 
 import (
+	Equipement "ProjetRED/Equipement"
+	personnage "ProjetRED/Personnage"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -48,7 +50,7 @@ var prix = map[string]int{
 var pieces = 100
 var inventaire = map[string]int{}
 
-func Marchand(retour func()) {
+func Marchand(p *personnage.Character, retour func()) {
 	n := 4
 	if n > len(achatCatalogue) {
 		n = len(achatCatalogue)
@@ -97,6 +99,9 @@ func Marchand(retour func()) {
 		pieces -= prixAchat
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
+		if item, ok := Equipement.Items[nomChoisi]; ok {
+			Equipement.AddItem(p, item)
+		}
 	}
 }
 
