@@ -8,7 +8,14 @@ import (
 	"strconv"
 )
 
-const inventoryUpgradePrice uint = 100
+const (
+	inventoryUpgradePrice uint = 50
+	inventoryUpgradeSize  uint = 5
+)
+
+func InventoryUpgradeCost(_ *personnage.Character) uint {
+	return inventoryUpgradePrice
+}
 
 // UpgradeInventory augmente de cinq places la capacité de l'inventaire.
 // Le paiement est effectué uniquement si le personnage possède assez d'or.
@@ -27,7 +34,7 @@ func UpgradeInventory(player *personnage.Character) bool {
 	}
 
 	player.Purse -= inventoryUpgradePrice
-	player.Inventory.Capacity += 5
+	player.Inventory.Capacity += inventoryUpgradeSize
 	return true
 }
 
