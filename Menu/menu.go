@@ -17,6 +17,7 @@ var CurrentPlayer *personnage.Character
 
 func SetCurrentPlayer(p *personnage.Character) {
 	CurrentPlayer = p
+	City.OpenMenu = MainMenu
 }
 
 func SaveCurrentGame() error {
@@ -71,6 +72,7 @@ func StartMenu() {
 
 // menu principal qui permet de faire pivot
 func MainMenu(p *personnage.Character) {
+	City.OpenMenu = MainMenu
 	for {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
 		fmt.Println("1. Lancé la partie")
@@ -213,7 +215,7 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Inventaire")
 
 	fmt.Fprintf(&sb, "├%s┤\n", ligne)
-	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent dans la poche")
+	fmt.Fprintf(&sb, "│ %-38s │\n", "Argent de poche")
 	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("%d yen", p.Purse))
 	fmt.Fprintf(&sb, "│ %-38s │\n", fmt.Sprintf("Capacité : %d/%d", p.Inventory.UsedSlots(), p.Inventory.Capacity))
 
@@ -225,8 +227,15 @@ func AccessInventory(p personnage.Character) string {
 	fmt.Fprintf(&sb, "│ %-38s │\n", "Consommables")
 	ecrireSection(&sb, p.Inventory.Consumables)
 
+	fmt.Fprintf(&sb, "├%s┤\n", ligne)
+	fmt.Fprintf(&sb, "│ %-38s │\n", "Livre de Sort")
+	ecrireSection(&sb, p.Inventory.SkillBooks)
+
 	fmt.Fprintf(&sb, "╰%s╯\n", ligne)
-	return sb.String()
+
+	result := sb.String()
+	fmt.Print(result)
+	return result
 }
 
 // ecrireSection affiche une map triée par clé, avec un message si elle est vide.
@@ -335,6 +344,7 @@ func DisplayItem(p personnage.Character) []string {
 	return names
 }
 
+ 
 // Crée une nouvelle func qui permet de lister tout ce qu'il y a dans la partie Inventory.Consumables
 func DisplayConsumables(p personnage.Character) []string {
 	if len(p.Inventory.Consumables) == 0 {

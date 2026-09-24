@@ -1,13 +1,13 @@
 package ProjetRED
 
 import (
-	Menu "ProjetRED/Menu"
 	personnage "ProjetRED/Personnage"
 	"fmt"
 	"time"
 )
 
 var QuestJack int
+var OpenMenu func(*personnage.Character)
 
 func Ville1(p *personnage.Character) {
 
@@ -20,7 +20,11 @@ func Ville1(p *personnage.Character) {
 		fmt.Println("0: pour quitter")
 		fmt.Scanln(&saisie)
 		if saisie == "m" {
-			Menu.MainMenu(p)
+			if OpenMenu != nil {
+				OpenMenu(p)
+				return
+			}
+			fmt.Println("Le menu principal n'est pas disponible.")
 		}
 		if saisie == "j" {
 			jack()
@@ -33,7 +37,8 @@ func Ville1(p *personnage.Character) {
 			return
 		}
 		fmt.Println("Erreur, veuillez entrer une lettre e, j ou m pour le menu")
-		Menu.WaitForReturn()
+		fmt.Println("Appuyez sur Entrée pour continuer...")
+		_, _ = fmt.Scanln()
 	}
 
 }
@@ -55,9 +60,12 @@ func observation(p *personnage.Character) {
 	time.Sleep(100 * time.Millisecond)
 	fmt.Println("0: Retourner à la place centrale")
 
-	choice, reponse := Menu.ReadChoice("Votre choix : ")
-	if !reponse {
+	fmt.Print("Votre choix : ")
+	var choice int
+	_, err := fmt.Scanf("%d", &choice)
+	if err != nil {
 		fmt.Println("Choix invalide !")
+		return
 	}
 	switch choice {
 	case 1:
