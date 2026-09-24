@@ -344,6 +344,7 @@ func DisplayItem(p personnage.Character) []string {
 	return names
 }
 
+ 
 // Crée une nouvelle func qui permet de lister tout ce qu'il y a dans la partie Inventory.Consumables
 func DisplayConsumables(p personnage.Character) []string {
 	if len(p.Inventory.Consumables) == 0 {
