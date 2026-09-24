@@ -78,10 +78,9 @@ var prix = map[string]int{
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
 
-var pieces = 100
 var inventaire = map[string]int{}
 
-func Marchand(retour func()) {
+func Marchand(p *personnage.Character, retour func()) {
 	n := 4
 	if n > len(achatCatalogue) {
 		n = len(achatCatalogue)
@@ -95,7 +94,7 @@ func Marchand(retour func()) {
 
 	for {
 		fmt.Println("\n--- Marchand ---")
-		fmt.Println("Tu as", pieces, "pièces")
+		fmt.Println("Tu as", p.Purse, "pièces")
 		for i, nom := range tirage {
 			fmt.Printf("%d - %s : %d pièces\n", i+1, nom, prix[nom])
 		}
@@ -110,7 +109,7 @@ func Marchand(retour func()) {
 			return
 		}
 		if saisie == "v" {
-			vendre()
+			vendre(p)
 			continue
 		}
 
@@ -122,14 +121,17 @@ func Marchand(retour func()) {
 
 		nomChoisi := tirage[choix-1]
 		prixAchat := prix[nomChoisi]
-		if pieces < prixAchat {
+		if p.Purse < uint(prixAchat) {
 			fmt.Println("tu n'as pas assez de pièces")
 			continue
 		}
 
-		pieces -= prixAchat
+		p.Purse -= uint(prixAchat)
 		inventaire[nomChoisi]++
 		fmt.Printf("tu as acheté %s pour %d pièces\n", nomChoisi, prixAchat)
+		if item, ok := Equipement.Items[nomChoisi]; ok {
+			Equipement.AddItem(p, item)
+		}
 	}
 }
 
@@ -176,6 +178,7 @@ func MarchandForPlayer(p *personnage.Character, retour func()) {
 }
 
 func vendre() {
+func vendre(p *personnage.Character) {
 	if len(inventaire) == 0 {
 		fmt.Println("tu n'as rien à vendre")
 		return
@@ -204,7 +207,7 @@ func vendre() {
 	nom := noms[choix-1]
 	prixDeVente := prix[nom] / 2
 
-	pieces += prixDeVente
+	p.Purse += uint(prixDeVente)
 	inventaire[nom]--
 	fmt.Printf("tu as vendu %s pour %d pièces\n", nom, prixDeVente)
 

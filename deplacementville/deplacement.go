@@ -16,8 +16,8 @@ func Deplacement(p *personnage.Character) {
 	villesValides := []bool{vv1, vv2, vv3, vv4}
 	villetransport := []func(){
 		func() { Ville1(p) },
-		func() { Ville2() },
-		func() { Ville3() },
+		func() { VilleD(p) },
+		func() { VilleH(p) },
 		func() { Ville4() },
 	}
 

@@ -100,6 +100,7 @@ func MainMenu(p *personnage.Character) {
 			WaitForReturn()
 		case 4:
 			Marchand.MarchandForPlayer(p, func() {})
+			Marchand.Marchand(p, func() {})
 		case 5:
 			Forgeron(p)
 		case 6:
