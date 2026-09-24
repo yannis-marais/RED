@@ -1,10 +1,34 @@
 package ProjetRED
 
 import (
+	personnage "ProjetRED/Personnage"
 	"fmt"
 	"math/rand"
 	"strconv"
 )
+
+const inventoryUpgradePrice uint = 100
+
+// UpgradeInventory augmente de cinq places la capacité de l'inventaire.
+// Le paiement est effectué uniquement si le personnage possède assez d'or.
+func UpgradeInventory(player *personnage.Character) bool {
+	if player == nil {
+		return false
+	}
+
+	// Les anciennes sauvegardes peuvent ne pas contenir la capacité.
+	if player.Inventory.Capacity == 0 {
+		player.Inventory.Capacity = personnage.DefaultInventoryCapacity
+	}
+
+	if player.Purse < inventoryUpgradePrice {
+		return false
+	}
+
+	player.Purse -= inventoryUpgradePrice
+	player.Inventory.Capacity += 5
+	return true
+}
 
 var achatCatalogue = []string{
 	"Swordshield", "Elementalist_Rings",
@@ -31,16 +55,12 @@ var prix = map[string]int{
 	"Huge_Cleaver":      100,
 	"Odachi":            100,
 	"Demonium_Staff":    100,
-	"Maximilian_Helmet": 200,
-	"Maximilian_Armor":  200,
-	"Maximilian_Boots":  200,
-	"La Maxime":         250,
 	"Straw_Hat":         10,
 	"Leather_Patch":     10,
 	"Boots":             10,
 	"Fork":              5,
-	"Healing_Potion":    60,
-	"Poison_DOT_Potion": 60,
+	"Healing_Potion":    20,
+	"Poison_DOT_Potion": 30,
 	"Pain":              15,
 	"Fer":               5, "Bois": 5, "Cuir": 8, "Cristal": 25, "Diamant": 100,
 }
