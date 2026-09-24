@@ -78,10 +78,10 @@ func salleDuTrone(p *personnage.Character) {
 	}
 	WaitForReturn()
 
-	boss, ok := enemies.SpawnMonster(world.Aleatoire("ville4"))
+	boss, ok := enemies.SpawnMonster(world.Aleatoire("Ville 4"))
 	if !ok || boss == nil {
 		fmt.Println("Le champion du trône ne s'est pas présenté... la voie est étrangement libre.")
-		couronnement(p)
+		coronation(p)
 		return
 	}
 
@@ -96,10 +96,10 @@ func salleDuTrone(p *personnage.Character) {
 		return
 	}
 
-	couronnement(p)
+	coronation(p)
 }
 
-func couronnement(p *personnage.Character) {
+func coronation(p *personnage.Character) {
 	switch Faction {
 	case "Heritier":
 		fmt.Printf("Dans une salle du trône enfin silencieuse, %s regarde le prince héritier s'agenouiller devant le grand prêtre.\n", p.Nom)
