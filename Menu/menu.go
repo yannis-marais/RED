@@ -54,8 +54,13 @@ func StartMenu() {
 	switch choice {
 	case 1:
 		Player := personnage.CharacterCreation(CreerPerso())
+		Equipement.AddConsumable(&Player, Equipement.HealingPotion)
+		Equipement.AddConsumable(&Player, Equipement.HealingPotion)
+		Equipement.AddConsumable(&Player, Equipement.HealingPotion)
+		Equipement.AddConsumable(&Player, Equipement.HealingPotion)
 		SetCurrentPlayer(&Player)
 		MainMenu(&Player)
+
 	case 2:
 		player, err := LoadCurrentGame()
 		if err != nil {
