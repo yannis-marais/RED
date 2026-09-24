@@ -99,7 +99,7 @@ func MainMenu(p *personnage.Character) {
 			ManageInventory(p)
 			WaitForReturn()
 		case 4:
-			Marchand.Marchand(func() {})
+			Marchand.Marchand(p, func() {})
 		case 5:
 			Forgeron(p)
 		case 6:
