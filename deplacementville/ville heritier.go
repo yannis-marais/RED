@@ -79,7 +79,7 @@ func patrouille(p *personnage.Character) bool {
 		WaitForReturn()
 		return false
 	}
-
+	HeritierProgress = 2
 	fmt.Println("La patrouille avance en silence jusqu'à la lisière des bois qui bordent le camp...")
 	time.Sleep(500 * time.Millisecond)
 

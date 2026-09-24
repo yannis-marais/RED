@@ -79,7 +79,7 @@ func chasse(p *personnage.Character) bool {
 		WaitForReturn()
 		return false
 	}
-
+	DechuProgress = 2
 	fmt.Println("Le groupe s'enfonce dans les broussailles aux abords du campement, sur les traces de la bête...")
 	time.Sleep(500 * time.Millisecond)
 
